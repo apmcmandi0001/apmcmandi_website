@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://YOUR-DOMAIN.in/</loc></url>
+  <url><loc>https://YOUR-DOMAIN.in/mandis</loc></url>
+  <url><loc>https://YOUR-DOMAIN.in/contact</loc></url>
+  <url><loc>https://YOUR-DOMAIN.in/privacy</loc></url>
+  <url><loc>https://YOUR-DOMAIN.in/terms</loc></url>
+  <!-- add one line per mandi, e.g. -->
+  <!-- <url><loc>https://YOUR-DOMAIN.in/m/yavatmal</loc></url> -->
+</urlset>
