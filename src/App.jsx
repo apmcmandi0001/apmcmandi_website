@@ -10,6 +10,7 @@ import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import BrokerPortal from './pages/BrokerPortal'
+import FarmerEntry from './pages/FarmerEntry'
 import NotFound from './pages/NotFound'
 
 /** Go to the top on every new page, or to #section when the link has one */
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/broker" element={<BrokerPortal />} />
+          <Route path="/entry/:code" element={<FarmerEntry />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
