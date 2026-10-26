@@ -1,0 +1,579 @@
+/* Farmer bill (website) — green scheme from BrokerPortal.css */
+
+.fb-farmer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #78350f;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+.fb-farmer.set {
+  background: var(--bp-soft);
+  color: var(--bp-green);
+}
+
+.fb-add {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.fb-add label {
+  display: grid;
+  gap: 4px;
+}
+.fb-add label > span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bp-muted);
+}
+.fb-add-no > div {
+  display: flex;
+  gap: 8px;
+}
+.fb-add-no .bp-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+.fb-add-no .bp-btn {
+  width: auto;
+  padding-left: 18px;
+  padding-right: 18px;
+  white-space: nowrap;
+}
+
+.fb-ok {
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.fb-lines {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+}
+.fb-line {
+  border: 1px solid var(--bp-line);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+}
+.fb-line-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.fb-x {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: var(--bp-red);
+  cursor: pointer;
+  font-size: 13px;
+}
+.fb-gross {
+  margin-top: 6px;
+  font-size: 14px;
+}
+.fb-ded-title {
+  margin: 10px 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bp-muted);
+}
+.fb-ded {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.fb-ded label {
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--bp-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.fb-ded label.on {
+  border-color: var(--bp-green-2);
+  background: var(--bp-soft);
+}
+.fb-ded label.locked {
+  background: #f3f4f6;
+  opacity: 0.7;
+}
+.fb-ded label > span {
+  font-size: 12px;
+  font-weight: 700;
+}
+.fb-ded label > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.fb-ded input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--bp-text);
+  padding: 2px 0;
+}
+.fb-ded em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--bp-muted);
+  white-space: nowrap;
+}
+.fb-ded small {
+  font-size: 11px;
+  color: var(--bp-green-2);
+  min-height: 14px;
+}
+.fb-ded label.locked small {
+  color: var(--bp-muted);
+}
+.fb-net {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 15px;
+}
+
+.fb-total {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--bp-soft);
+  display: grid;
+  gap: 4px;
+}
+.fb-total div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+}
+.fb-total span {
+  color: var(--bp-muted);
+}
+.fb-total .big {
+  border-top: 1px solid #bbf7d0;
+  padding-top: 8px;
+  margin-top: 4px;
+  font-size: 18px;
+}
+.fb-total .big span {
+  color: var(--bp-text);
+  font-weight: 700;
+}
+.fb-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.fb-actions .bp-btn {
+  width: 100%;
+  min-height: 50px;
+  font-size: 16px;
+}
+.fb-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--bp-muted);
+  margin: 8px 0 0;
+}
+
+/* payment mode */
+.fb-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(15, 23, 20, 0.5);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.fb-modal-box {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px;
+  display: grid;
+  gap: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+.fb-modal-box h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.fb-modal-box p {
+  margin: 0;
+}
+.fb-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.fb-modes button {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 16px 8px;
+  border-radius: 14px;
+  border: 2px solid;
+  font: inherit;
+  cursor: pointer;
+}
+.fb-modes button span {
+  font-size: 28px;
+}
+.fb-modes button b {
+  font-size: 19px;
+}
+.fb-modes button small {
+  font-size: 12px;
+  color: var(--bp-muted);
+}
+.fb-modes .cash {
+  border-color: var(--bp-green-2);
+  background: var(--bp-soft);
+  color: var(--bp-green);
+}
+.fb-modes .rtgs {
+  border-color: #1d4ed8;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.fb-modes button:hover {
+  transform: translateY(-1px);
+}
+
+/* bill made */
+.fb-done {
+  text-align: center;
+}
+.fb-done-tick {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--bp-green-2);
+}
+.fb-done-amt {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--bp-green);
+  margin: 6px 0 4px;
+}
+.fb-link {
+  margin-top: 14px;
+  background: none;
+  border: 0;
+  color: var(--bp-green-2);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .fb-add {
+    grid-template-columns: 1fr;
+  }
+  .fb-ded {
+    grid-template-columns: 1fr;
+  }
+  .fb-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- pending bills ---------- */
+.pb-filters {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.pb-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pb-date .bp-input {
+  flex: 1;
+  min-width: 0;
+}
+.pb-farmer {
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.pb-ico {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #fef3c7;
+  font-size: 20px;
+}
+.pb-hint {
+  margin-bottom: 8px;
+}
+.fb-line.pb-off {
+  opacity: 0.55;
+  background: #fafafa;
+}
+.pb-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.pb-check input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--bp-green-2);
+}
+.pb-saved {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bp-soft);
+  font-size: 14px;
+}
+.pb-saved span {
+  color: var(--bp-green-2);
+  font-weight: 700;
+}
+.fb-actions.pb-one {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 640px) {
+  .pb-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- buyer bill ---------- */
+.bb-search {
+  margin-bottom: 12px;
+}
+.bb-ico {
+  background: #fef3c7;
+}
+.bb-buyer {
+  justify-content: flex-start;
+}
+.bb-buyer .fb-link {
+  margin: 0 0 0 auto;
+}
+.bb-comm {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.bb-comm > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--bp-line);
+  border-radius: 10px;
+}
+.bb-comm span {
+  font-size: 12px;
+  color: var(--bp-muted);
+  grid-column: 1;
+}
+.bb-comm > div > b:last-child {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+.bb-items {
+  border: 1px solid var(--bp-line);
+  border-radius: 12px;
+  padding: 4px 12px;
+  max-height: 360px;
+  overflow: auto;
+}
+.bb-pct {
+  display: grid;
+  gap: 4px;
+  margin-top: 14px;
+  max-width: 220px;
+}
+.bb-pct span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bp-muted);
+}
+.bb-pct .bp-input {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ---------- transfer bill ---------- */
+.tb-dates {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.tb-dates label {
+  display: grid;
+  gap: 4px;
+}
+.tb-dates label > span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bp-muted);
+}
+.tb-skip {
+  margin: 4px 0 8px;
+}
+.tb-items {
+  max-height: 440px;
+}
+.tb-line {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.tb-line input {
+  width: 20px;
+  height: 20px;
+  accent-color: #0e7490;
+}
+.tb-tag {
+  background: #dcfce7;
+  color: #166534;
+}
+.tb-broker {
+  max-width: 420px;
+}
+.tb-btn {
+  background: #0e7490;
+  border-color: #0e7490;
+}
+.tb-tick {
+  background: #0e7490;
+}
+@media (max-width: 640px) {
+  .tb-dates {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- export ---------- */
+.tb-dates.ex-two {
+  grid-template-columns: 1fr 1fr;
+}
+.tb-dates.ex-year {
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+}
+.ex-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ex-kinds label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--bp-line);
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+}
+.ex-kinds label.on {
+  border-color: #1d6f42;
+  background: #ecfdf3;
+  color: #1d6f42;
+}
+.ex-kinds input {
+  accent-color: #1d6f42;
+}
+.ex-result {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--bp-line);
+  background: #fbfdfc;
+  display: grid;
+  gap: 12px;
+}
+.ex-counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+.ex-counts div {
+  display: grid;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--bp-line);
+}
+.ex-counts b {
+  font-size: 24px;
+}
+.ex-counts span {
+  font-weight: 700;
+  font-size: 13px;
+}
+.ex-counts small {
+  color: var(--bp-muted);
+}
+.ex-excel {
+  width: 100%;
+  min-height: 50px;
+  font-size: 16px;
+  background: #1d6f42;
+  border-color: #1d6f42;
+}
+.ex-pdfs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .tb-dates.ex-year {
+    grid-template-columns: 1fr 1fr;
+  }
+}

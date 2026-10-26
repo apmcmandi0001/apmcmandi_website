@@ -11,11 +11,11 @@ export const navItems = [
   ['/contact', 'contact'],
 ]
 
-// Broker Login button text in all 3 languages
-const brokerLoginLabel = {
-  en: 'Broker Login',
-  hi: 'ब्रोकर लॉगिन',
-  mr: 'अडत्या लॉगिन',
+// Trader Login button text in all 3 languages (brokers + buyers)
+const traderLoginLabel = {
+  en: 'Trader Login',
+  hi: 'व्यापारी लॉगिन',
+  mr: 'व्यापारी लॉगिन',
 }
 
 export default function Header() {
@@ -27,7 +27,7 @@ export default function Header() {
     setOpen(false)
   }, [location.pathname, location.hash])
 
-  const loginText = brokerLoginLabel[lang] || brokerLoginLabel.en
+  const loginText = traderLoginLabel[lang] || traderLoginLabel.en
 
   const link = ([to, key]) =>
     to.includes('#') ? (
@@ -56,7 +56,7 @@ export default function Header() {
           <Link className="nav-cta" to="/contact#demo">
             {t.nav.demo}
           </Link>
-          <Link className="nav-cta" to="/broker">
+          <Link className="nav-cta" to="/trader">
             {loginText}
           </Link>
         </nav>
@@ -85,7 +85,7 @@ export default function Header() {
         <nav id="mobile-nav" className="mobile-nav" aria-label="Mobile">
           {navItems.map(link)}
           <Link to="/contact#demo">{t.nav.demo}</Link>
-          <Link to="/broker">{loginText}</Link>
+          <Link to="/trader">{loginText}</Link>
         </nav>
       )}
     </header>

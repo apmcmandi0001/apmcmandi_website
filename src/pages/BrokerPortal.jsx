@@ -13,7 +13,9 @@ import {
 import './BrokerPortal.css'
 
 // ---------------------------------------------------------------- text (3 languages)
-const TEXT = {
+export const BROKER_TEXT = {
+  // (also used by the Trader page when a broker account is opened)
+
   en: {
     title: 'Broker Login',
     sub: 'Use the same Login ID and PIN as the mobile app',
@@ -222,7 +224,7 @@ const qtl = (n) => (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDig
 // ================================================================ page
 export default function BrokerPortal() {
   const { lang } = useLang()
-  const T = TEXT[lang] || TEXT.en
+  const T = BROKER_TEXT[lang] || BROKER_TEXT.en
   const [session, setSession] = useState(() => getSession())
 
   return (
@@ -345,8 +347,13 @@ function LoginForm({ T, onLogin }) {
 }
 
 // ================================================================ bills list
-function BillsView({ T, lang, session, onLogout }) {
-  const [tab, setTab] = useState('farmer')
+/**
+ * Bills of one broker account.
+ * From the Trader page: pass onBack + backLabel → the top button goes back to
+ * My Accounts instead of logging out.
+ */
+export function BillsView({ T, lang, session, onLogout, onBack, backLabel, initialTab, onPrint }) {
+  const [tab, setTab] = useState(initialTab || 'farmer')
   const [from, setFrom] = useState(monthStartYmd())
   const [to, setTo] = useState(todayYmd())
   const [rows, setRows] = useState([])
@@ -366,9 +373,9 @@ function BillsView({ T, lang, session, onLogout }) {
       } catch (e) {
         if (!alive) return
         if (e.message === 'SESSION_EXPIRED') {
-          clearSession()
+          if (!onBack) clearSession()
           alert(T.errors.expired)
-          onLogout()
+          ;(onBack || onLogout)()
           return
         }
         setRows([])
@@ -386,6 +393,10 @@ function BillsView({ T, lang, session, onLogout }) {
   }, [tab, reload, session.token])
 
   async function logout() {
+    if (onBack) {
+      onBack()
+      return
+    }
     await brokerLogout(session.token)
     onLogout()
   }
@@ -399,7 +410,7 @@ function BillsView({ T, lang, session, onLogout }) {
           {session.mandi_name && <div className="bp-mandi">{session.mandi_name}</div>}
         </div>
         <button type="button" className="bp-btn bp-btn-outline" onClick={logout}>
-          {T.logout}
+          {onBack ? backLabel : T.logout}
         </button>
       </div>
 
@@ -419,7 +430,7 @@ function BillsView({ T, lang, session, onLogout }) {
       </div>
 
       {tab === 'pending' ? (
-        <PendingView T={T} lang={lang} session={session} onExpired={onLogout} />
+        <PendingView T={T} lang={lang} session={session} onExpired={onBack || onLogout} />
       ) : (
         <>
       <div className="bp-filter">
@@ -444,7 +455,7 @@ function BillsView({ T, lang, session, onLogout }) {
       ) : (
         <div className="bp-list">
           {rows.map((r) => (
-            <BillRow key={r.id} T={T} lang={lang} kind={tab} r={r} />
+            <BillRow key={r.id} T={T} lang={lang} kind={tab} r={r} onPrint={onPrint} />
           ))}
         </div>
       )}
@@ -454,7 +465,7 @@ function BillsView({ T, lang, session, onLogout }) {
   )
 }
 
-function BillRow({ T, lang, kind, r }) {
+function BillRow({ T, lang, kind, r, onPrint }) {
   const no = kind === 'transfer' ? r.transfer_no : r.bill_no
   const date = kind === 'transfer' ? r.transfer_date : r.bill_date
 
@@ -475,7 +486,7 @@ function BillRow({ T, lang, kind, r }) {
   const qty = kind === 'transfer' ? r.total_weight_quintal : r.total_quintal
 
   return (
-    <button type="button" className="bp-row" onClick={() => alert(T.printSoon)}>
+    <button type="button" className="bp-row" onClick={() => (onPrint ? onPrint(r, kind) : alert(T.printSoon))}>
       <div className="bp-row-main">
         <div className="bp-row-no">
           {T.billNo} {no}

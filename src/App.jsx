@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -9,7 +9,7 @@ import MandiRates from './pages/MandiRates'
 import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
-import BrokerPortal from './pages/BrokerPortal'
+import TraderPortal from './pages/TraderPortal'
 import FarmerEntry from './pages/FarmerEntry'
 import NotFound from './pages/NotFound'
 
@@ -45,7 +45,9 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
-          <Route path="/broker" element={<BrokerPortal />} />
+          <Route path="/trader" element={<TraderPortal />} />
+          {/* old link: Broker Login now lives inside Trader Login */}
+          <Route path="/broker" element={<Navigate to="/trader" replace />} />
           <Route path="/entry/:code" element={<FarmerEntry />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

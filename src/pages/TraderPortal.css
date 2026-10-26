@@ -1,0 +1,303 @@
+/* Trader login page — builds on BrokerPortal.css (bp-* classes) */
+
+.tp-wrap .bp-card {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------- login ---------- */
+.tp-login {
+  text-align: center;
+}
+.tp-login .tp-form {
+  text-align: left;
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.tp-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bp-soft);
+  color: var(--bp-green);
+}
+.tp-phone {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid var(--bp-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.tp-phone:focus-within {
+  border-color: var(--bp-green-2);
+}
+.tp-phone span {
+  display: grid;
+  place-items: center;
+  padding: 0 14px;
+  font-weight: 700;
+  color: var(--bp-muted);
+  background: var(--bp-soft);
+  border-right: 1.5px solid var(--bp-line);
+}
+.tp-phone .bp-input {
+  border: 0;
+  border-radius: 0;
+  font-size: 18px;
+  letter-spacing: 1px;
+}
+.tp-phone .bp-input:focus {
+  outline: none;
+}
+.tp-otp {
+  font-size: 26px;
+  letter-spacing: 12px;
+  text-align: center;
+  font-weight: 700;
+}
+.tp-sent {
+  margin: 0;
+  color: var(--bp-muted);
+}
+.tp-resend {
+  text-align: center;
+  font-size: 14px;
+}
+.tp-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--bp-green-2);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+}
+.tp-link:disabled {
+  opacity: 0.5;
+}
+
+/* ---------- my accounts ---------- */
+.tp-group {
+  margin-top: 18px;
+}
+.tp-group-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bp-muted);
+  margin-bottom: 8px;
+}
+.tp-group-title span {
+  background: var(--bp-soft);
+  color: var(--bp-green);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-left: 4px;
+}
+.tp-acc {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--bp-line);
+  border-radius: 14px;
+  background: #fff;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tp-acc:not(.off):hover {
+  border-color: var(--bp-green-2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+.tp-acc.off {
+  opacity: 0.65;
+}
+.tp-acc-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.tp-acc-main:disabled {
+  cursor: default;
+}
+.tp-avatar {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: #fff;
+  background: var(--bp-green-2);
+}
+.tp-avatar.buyer {
+  background: #b45309;
+}
+.tp-acc-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.tp-acc-name {
+  font-weight: 700;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tp-acc-text .bp-muted {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tp-off {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bp-red);
+}
+.tp-open {
+  flex: none;
+  font-weight: 700;
+  color: var(--bp-green-2);
+  white-space: nowrap;
+}
+.tp-remove {
+  flex: none;
+  width: 44px;
+  border: 0;
+  border-left: 1px solid var(--bp-line);
+  background: #fff;
+  color: var(--bp-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+.tp-remove:hover {
+  color: var(--bp-red);
+  background: #fef3f2;
+}
+.tp-add {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* ---------- add account ---------- */
+.tp-addform {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1.5px dashed var(--bp-line);
+  border-radius: 14px;
+  background: #fbfdfc;
+  display: grid;
+  gap: 8px;
+}
+.tp-addform h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.tp-types {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--bp-soft);
+  margin-bottom: 4px;
+}
+.tp-types button {
+  border: 0;
+  border-radius: 9px;
+  padding: 9px;
+  font: inherit;
+  font-weight: 700;
+  background: transparent;
+  color: var(--bp-muted);
+  cursor: pointer;
+}
+.tp-types button.active {
+  background: #fff;
+  color: var(--bp-green);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+.tp-addbtns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* ---------- buyer pages ---------- */
+.tp-sum {
+  margin: 4px 0 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bp-soft);
+  color: var(--bp-text);
+}
+.tp-breakup {
+  margin: 10px 0 0 auto;
+  max-width: 340px;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+.tp-breakup div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tp-breakup span {
+  color: var(--bp-muted);
+}
+.tp-breakup-total {
+  border-top: 1px solid var(--bp-line);
+  padding-top: 6px;
+  margin-top: 2px;
+  font-size: 16px;
+}
+.tp-breakup-total span {
+  color: var(--bp-text);
+  font-weight: 700;
+}
+.tp-status {
+  display: inline-block;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+}
+.tp-status.paid {
+  background: #dcfce7;
+  color: #166534;
+}
+.tp-status.unpaid {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+@media (max-width: 560px) {
+  .tp-acc-main {
+    padding: 10px 12px;
+  }
+  .tp-open {
+    display: none;
+  }
+}
