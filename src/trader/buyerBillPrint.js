@@ -2,9 +2,11 @@
 // शेत मालाचे बिल — broker → buyer bill print (same text & layout as the app's PDF)
 // Half A4 portrait (A5 portrait). Opens a print window; "Save as PDF" also works.
 // data = result of broker_web_make_buyer_bill / broker_web_buyer_bill_print
+// data.texts = the mandi's changed words (table bill_text); missing → original
 // =============================================================================
 
-const SUBTITLE = 'परिशिष्ट क्र. ८/मार्गदर्शक तत्वे १४ - शेत मालाचे बिल - कास्तकाराचा शेत माल विकण्या बाबतचे बिल'
+import { mergeBillTexts } from './billTexts'
+
 const ROWS_PER_PAGE = 26
 
 const n = (v) => Number(v) || 0
@@ -26,7 +28,8 @@ const billNo = (firm, no) => {
   return ini ? `${ini}/${no}` : String(no)
 }
 
-function page(d, rows, last, pageNo, pageCount) {
+function page(d, t, rows, last, pageNo, pageCount) {
+  const T = (k) => esc(t[k])
   const body = rows
     .map(
       (r) => `<tr>
@@ -43,23 +46,23 @@ function page(d, rows, last, pageNo, pageCount) {
   const empty = Array.from({ length: Math.max(0, ROWS_PER_PAGE - rows.length) }, () => '<tr class="e">' + '<td></td>'.repeat(7) + '</tr>').join('')
 
   const totalRow = last
-    ? `<tr><td class="r"><b>Total</b></td><td>${d.totalBags.toFixed(2)}</td><td>${d.totalLoose.toFixed(1)}</td><td></td>
+    ? `<tr><td class="r"><b>${T('total')}</b></td><td>${d.totalBags.toFixed(2)}</td><td>${d.totalLoose.toFixed(1)}</td><td></td>
        <td>${d.totalQtl.toFixed(2)}</td><td></td><td>${m2(d.gross)}</td></tr>`
-    : `<tr><td class="r" colspan="7">पुढे चालू ... (${pageNo}/${pageCount})</td></tr>`
+    : `<tr><td class="r" colspan="7">${T('continued')} (${pageNo}/${pageCount})</td></tr>`
 
   const footer = last
     ? `<div class="foot">
         <div>
-          <div>Pan No. : ${esc(d.pan)}</div>
-          <div class="gap">बिलाची प्रत मिळाली</div>
-          <div class="gap2">खरीददाराची सही</div>
+          <div>${T('panLabel')} ${esc(d.pan)}</div>
+          <div class="gap">${T('received')}</div>
+          <div class="gap2">${T('signBuyer')}</div>
         </div>
         <div class="tot">
-          <div><span>अडत :</span><span>${m2(d.brokerage)}</span></div>
-          <div><span>हमाली :</span><span>${m2(0)}</span></div>
-          ${d.tds > 0.009 ? `<div><span>टी.डी.एस. :</span><span>${m2(-d.tds)}</span></div>` : ''}
-          <div class="big"><span>एकुण :</span><b>${m2(d.total)}</b></div>
-          <div class="sign">अडत्याची सही</div>
+          <div><span>${T('brokerage')} :</span><span>${m2(d.brokerage)}</span></div>
+          <div><span>${T('hamali')} :</span><span>${m2(0)}</span></div>
+          ${d.tds > 0.009 ? `<div><span>${T('tds')} :</span><span>${m2(-d.tds)}</span></div>` : ''}
+          <div class="big"><span>${T('grandTotal')} :</span><b>${m2(d.total)}</b></div>
+          <div class="sign">${T('signBroker')}</div>
         </div>
       </div>`
     : ''
@@ -68,15 +71,15 @@ function page(d, rows, last, pageNo, pageCount) {
     <div class="h1">${esc(d.line1)}</div>
     ${d.line2 ? `<div class="h2">${esc(d.line2)}</div>` : ''}
     ${d.address ? `<div class="h3">${esc(d.address)}</div>` : ''}
-    <div class="h4">${SUBTITLE}</div>
+    <div class="h4">${T('subtitle')}</div>
     <div class="info">
-      <div class="row"><span><b>अडत्याचे नांव : ${esc(d.brokerLine)}</b></span><span>No : ${esc(d.billNo)}</span></div>
-      <div class="row"><span><b>खरेदीदाराचे नाव :</b> ${esc(d.buyer)}</span><span>Date : ${esc(d.date)}</span></div>
+      <div class="row"><span><b>${T('brokerLabel')} ${esc(d.brokerLine)}</b></span><span>${T('noLabel')} ${esc(d.billNo)}</span></div>
+      <div class="row"><span><b>${T('buyerLabel')}</b> ${esc(d.buyer)}</span><span>${T('dateLabel')} ${esc(d.date)}</span></div>
     </div>
     <table>
       <thead><tr>
-        <th>शेतमालाचे नांव</th><th>पोते</th><th>किला</th><th>भरती किलो</th>
-        <th>नक्की वजन<br>क्विंटल किलो</th><th>शेतमाल दर<br>प्र.क्विंटल</th><th>रक्कम<br>रू.</th>
+        <th>${T('colCommodity')}</th><th>${T('colBags')}</th><th>${T('colLoose')}</th><th>${T('colBagKg')}</th>
+        <th>${T('colWeight1')}<br>${T('colWeight2')}</th><th>${T('colRate1')}<br>${T('colRate2')}</th><th>${T('colAmount1')}<br>${T('colAmount2')}</th>
       </tr></thead>
       <tbody>${body}${empty}</tbody>
       <tfoot>${totalRow}</tfoot>
@@ -108,7 +111,7 @@ const STYLE = `
     .tot div { display: flex; justify-content: space-between; gap: 8px; line-height: 1.5; }
     .tot .big { border-top: 1px solid #000; font-size: 10.5pt; }
     .tot .sign { justify-content: center; margin-top: 8px; }
-    .bar { position: sticky; top: 0; background: #14532d; color: #fff; padding: 8px; text-align: center; font-family: system-ui; }
+    .bar { position: sticky; top: 0; background: #0e7490; color: #fff; padding: 8px; text-align: center; font-family: system-ui; }
     .bar button { font: inherit; font-weight: 700; padding: 6px 16px; border-radius: 8px; border: 0; cursor: pointer; }
     @media print { body { background: #fff; } .pg { margin: 0; } .bar { display: none; } }
   `
@@ -121,10 +124,11 @@ export function buyerBillPages(data) {
   const md = data?.mandi || {}
   const firm = br.firm || br.name || '-'
   const phone = String(br.phone || '').replace('+91', '').trim()
+  const t = mergeBillTexts('buyer', data?.texts)
   const d = {
-    line1: md.line1 || md.name || '',
-    line2: md.line2 || '',
-    address: md.address || '',
+    line1: t.header1 || md.line1 || md.name || '',
+    line2: t.header2 || md.line2 || '',
+    address: t.address || md.address || '',
     brokerLine: phone ? `${firm} ${mrDigits(phone)}` : firm,
     billNo: billNo(firm, b.bill_no),
     buyer: String(data?.buyer?.firm || data?.buyer?.name || '-').toUpperCase(),
@@ -143,19 +147,24 @@ export function buyerBillPages(data) {
   for (let i = 0; i < lines.length; i += ROWS_PER_PAGE) pages.push(lines.slice(i, i + ROWS_PER_PAGE))
   if (!pages.length) pages.push([])
 
-  return `${pages.map((p, i) => page(d, p, i === pages.length - 1, i + 1, pages.length)).join('')}`
+  return `${pages.map((p, i) => page(d, t, p, i === pages.length - 1, i + 1, pages.length)).join('')}`
+}
+
+/** Whole html page for many bills. print = add the Print bar and open the print box. */
+export function buyerBillsHtml(list, title = 'Bills', print = true) {
+  return `<!doctype html><html><head><meta charset="utf-8">
+  <title>${esc(title)}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+  <style>${STYLE}</style></head><body>
+  ${print ? '<div class="bar"><button onclick="window.print()">Print / Save PDF</button></div>' : ''}
+  ${list.map((d) => buyerBillPages(d)).join('')}
+  ${print ? '<script>document.fonts && document.fonts.ready.then(function(){ setTimeout(function(){ window.print() }, 300) })</script>' : ''}
+  </body></html>`
 }
 
 /** Prints many bills in one window (one after another). Returns false if pop-ups are blocked. */
 export function printBuyerBills(list, win, title = 'Bills') {
-  const html = `<!doctype html><html><head><meta charset="utf-8">
-  <title>${esc(title)}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
-  <style>${STYLE}</style></head><body>
-  <div class="bar"><button onclick="window.print()">Print / Save PDF</button></div>
-  ${list.map((d) => buyerBillPages(d)).join('')}
-  <script>document.fonts && document.fonts.ready.then(function(){ setTimeout(function(){ window.print() }, 300) })</script>
-  </body></html>`
+  const html = buyerBillsHtml(list, title, true)
   const w = win || window.open('', '_blank', 'width=800,height=900')
   if (!w) return false
   w.document.open()

@@ -5,7 +5,7 @@
 // =============================================================================
 
 export const brand = {
-  name: 'APMC Mandi', // TODO: put the new brand name here
+  name: 'DigiMandi', // brand name shown on the website (header, footer, titles, terms)
   tagline: {
     mr: 'खाजगी बाजार समित्यांसाठी संपूर्ण डिजिटल प्रणाली',
     hi: 'निजी मंडियों के लिए पूरी डिजिटल प्रणाली',
@@ -13,7 +13,7 @@ export const brand = {
   },
 
   // Your company (the software provider) — TODO: replace placeholders
-  company: 'Cubicle Ventures Private Limited   ',
+  company: 'Cubicle Ventures Private Limited', // parent company of DigiMandi
   phone: '+91 00000 00000',
   phoneDial: '+910000000000',
   whatsapp: '910000000000', // country code + number, no "+" or spaces

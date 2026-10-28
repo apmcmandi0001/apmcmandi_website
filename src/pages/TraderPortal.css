@@ -24,7 +24,7 @@
   display: grid;
   place-items: center;
   background: var(--bp-soft);
-  color: var(--bp-green);
+  color: var(--bp-brand);
 }
 .tp-phone {
   display: flex;
@@ -35,7 +35,7 @@
   background: #fff;
 }
 .tp-phone:focus-within {
-  border-color: var(--bp-green-2);
+  border-color: var(--bp-brand-2);
 }
 .tp-phone span {
   display: grid;
@@ -73,7 +73,7 @@
   background: none;
   border: 0;
   padding: 0;
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
@@ -97,7 +97,7 @@
 }
 .tp-group-title span {
   background: var(--bp-soft);
-  color: var(--bp-green);
+  color: var(--bp-brand);
   border-radius: 999px;
   padding: 1px 8px;
   margin-left: 4px;
@@ -113,7 +113,7 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .tp-acc:not(.off):hover {
-  border-color: var(--bp-green-2);
+  border-color: var(--bp-brand-2);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 .tp-acc.off {
@@ -146,7 +146,7 @@
   font-weight: 800;
   font-size: 18px;
   color: #fff;
-  background: var(--bp-green-2);
+  background: var(--bp-brand-2);
 }
 .tp-avatar.buyer {
   background: #b45309;
@@ -177,7 +177,7 @@
 .tp-open {
   flex: none;
   font-weight: 700;
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
   white-space: nowrap;
 }
 .tp-remove {
@@ -205,7 +205,7 @@
   padding: 16px;
   border: 1.5px dashed var(--bp-line);
   border-radius: 14px;
-  background: #fbfdfc;
+  background: #f8fcfd;
   display: grid;
   gap: 8px;
 }
@@ -234,7 +234,7 @@
 }
 .tp-types button.active {
   background: #fff;
-  color: var(--bp-green);
+  color: var(--bp-brand);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 .tp-addbtns {

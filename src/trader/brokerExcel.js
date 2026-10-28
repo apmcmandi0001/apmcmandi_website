@@ -21,7 +21,7 @@ export function brokerWorkbook(data, periodText) {
   const fb = data.farmer_bills || []
   const bb = data.buyer_bills || []
   const tr = data.transfers || []
-  const title = `${data.mandi || 'APMC Mandi'} — ${data.broker || ''}`
+  const title = `${data.mandi || 'DigiMandi'} — ${data.broker || ''}`
   const sheets = []
   const summary = [['Broker', data.broker || '-'], ['Period', periodText], []]
 
@@ -291,7 +291,7 @@ export function brokerWorkbook(data, periodText) {
 // =============================================================================
 export function buyerWorkbook(data, periodText) {
   const bb = data.buyer_bills || []
-  const title = `${data.mandi || 'APMC Mandi'} — ${data.buyer || ''}`
+  const title = `${data.mandi || 'DigiMandi'} — ${data.buyer || ''}`
   const lines = bb.flatMap((b) => (b.lines || []).map((l) => ({ ...l, _b: b.bill, _broker: b.broker_name })))
   const T = (k) => sum(bb, (b) => n(b.bill?.[k]))
   const weight = sum(lines, (l) => n(l.weight_quintal))

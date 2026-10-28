@@ -52,16 +52,16 @@ export function WhatsAppIcon({ size = 22 }) {
   )
 }
 
+/** DigiMandi logo — three leaves on a white rounded tile (same mark as the app icon) */
 export function BrandMark({ className = 'brand-mark' }) {
   return (
-    <svg className={className} viewBox="0 0 64 64" aria-hidden="true">
-      <rect width="64" height="64" rx="16" fill="#14532D" />
-      <g fill="#fff">
-        <circle cx="25" cy="26" r="9" />
-        <circle cx="39" cy="26" r="9" />
-        <circle cx="32" cy="36" r="10" />
+    <svg className={className} viewBox="0 0 64 64" role="img" aria-label="DigiMandi">
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="16" fill="#fff" stroke="#cfe9ef" strokeWidth="1.5" />
+      <g transform="translate(5 5.5) scale(0.84)" stroke="#fff" strokeWidth="3.4" strokeLinejoin="round">
+        <path transform="rotate(-44 32 57)" d="M32 57 C25.4 48 24.9 35 32 22 C39.1 35 38.6 48 32 57 Z" fill="#22d3ee" />
+        <path transform="rotate(44 32 57)" d="M32 57 C25.4 48 24.9 35 32 22 C39.1 35 38.6 48 32 57 Z" fill="#0891b2" />
+        <path d="M32 57 C23.4 46 22.9 28 32 7 C41.1 28 40.6 46 32 57 Z" fill="#0e7490" />
       </g>
-      <path d="M32 46v10M24 50l8 4 8-4" stroke="#E9A23B" strokeWidth="3" fill="none" strokeLinecap="round" />
     </svg>
   )
 }

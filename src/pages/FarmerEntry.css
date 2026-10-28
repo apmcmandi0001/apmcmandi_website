@@ -1,28 +1,28 @@
-.fe-wrap { padding: 20px 0 120px; --fe-green: #14532d; --fe-green-2: #1f7a45; --fe-soft: #eef6f0; --fe-line: #d6e2d9; --fe-text: #1b2a20; --fe-muted: #5f6f64; }
-.fe-card { max-width: 480px; margin: 0 auto; background: #fff; border: 1px solid var(--fe-line); border-radius: 18px; padding: 22px 18px; color: var(--fe-text); box-shadow: 0 10px 30px rgba(20, 83, 45, 0.06); }
+.fe-wrap { padding: 20px 0 120px; --fe-brand: #0e7490; --fe-brand-2: #0891b2; --fe-soft: #ecfeff; --fe-line: #dbe7ea; --fe-text: #0f2a33; --fe-muted: #5b7078; }
+.fe-card { max-width: 480px; margin: 0 auto; background: #fff; border: 1px solid var(--fe-line); border-radius: 18px; padding: 22px 18px; color: var(--fe-text); box-shadow: 0 10px 30px rgba(8, 47, 73, 0.06); }
 .fe-card h1 { margin: 2px 0 4px; font-size: 26px; }
-.fe-mandi { color: var(--fe-green-2); font-weight: 700; font-size: 15px; }
+.fe-mandi { color: var(--fe-brand-2); font-weight: 700; font-size: 15px; }
 .fe-sub { color: var(--fe-muted); margin: 0 0 10px; font-size: 15px; }
 .fe-field { display: block; margin-top: 16px; }
 .fe-field > span { display: block; font-weight: 700; font-size: 17px; margin-bottom: 6px; }
 .fe-field input, .fe-field select { width: 100%; box-sizing: border-box; font: inherit; font-size: 20px; padding: 14px; border: 2px solid var(--fe-line); border-radius: 12px; background: #fff; color: var(--fe-text); }
-.fe-field input:focus, .fe-field select:focus { outline: none; border-color: var(--fe-green-2); }
+.fe-field input:focus, .fe-field select:focus { outline: none; border-color: var(--fe-brand-2); }
 .fe-search { margin-bottom: 8px; font-size: 17px !important; }
 .fe-phone { display: flex; align-items: center; border: 2px solid var(--fe-line); border-radius: 12px; overflow: hidden; }
 .fe-phone b { padding: 0 12px; font-size: 20px; background: var(--fe-soft); align-self: stretch; display: flex; align-items: center; }
 .fe-phone input { border: 0 !important; border-radius: 0 !important; letter-spacing: 1px; }
 .fe-chips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .fe-chips button { font: inherit; font-size: 18px; font-weight: 700; padding: 14px 8px; border-radius: 12px; border: 2px solid var(--fe-line); background: #fff; color: var(--fe-text); cursor: pointer; }
-.fe-chips button.on { background: var(--fe-green); border-color: var(--fe-green); color: #fff; }
-.fe-btn { width: 100%; margin-top: 22px; font: inherit; font-size: 20px; font-weight: 800; padding: 16px; border: 0; border-radius: 14px; background: var(--fe-green); color: #fff; cursor: pointer; }
+.fe-chips button.on { background: var(--fe-brand); border-color: var(--fe-brand); color: #fff; }
+.fe-btn { width: 100%; margin-top: 22px; font: inherit; font-size: 20px; font-weight: 800; padding: 16px; border: 0; border-radius: 14px; background: var(--fe-brand); color: #fff; cursor: pointer; }
 .fe-btn:disabled { opacity: 0.6; }
-.fe-btn-outline { background: #fff; color: var(--fe-green); border: 2px solid var(--fe-green); font-size: 17px; }
+.fe-btn-outline { background: #fff; color: var(--fe-brand); border: 2px solid var(--fe-brand); font-size: 17px; }
 .fe-error { margin-top: 14px; padding: 12px; border-radius: 10px; background: #fdecea; color: #b42318; font-weight: 700; font-size: 16px; }
 .fe-empty { text-align: center; padding: 40px 0; color: var(--fe-muted); }
 .fe-expired { text-align: center; padding: 34px 10px; font-size: 19px; font-weight: 700; color: #9a3412; line-height: 1.5; }
 .fe-done { text-align: center; }
 .fe-label { margin-top: 14px; font-size: 18px; font-weight: 700; color: var(--fe-muted); }
-.fe-token { font-size: 120px; font-weight: 900; line-height: 1; color: var(--fe-green); margin: 6px 0; }
+.fe-token { font-size: 120px; font-weight: 900; line-height: 1; color: var(--fe-brand); margin: 6px 0; }
 .fe-date { font-size: 16px; color: var(--fe-muted); }
 .fe-note { margin-top: 10px; font-size: 14px; color: #9a5b00; }
 .fe-show { margin: 18px 0 8px; padding: 14px; border-radius: 12px; background: #fff7e6; color: #7a4a00; font-size: 17px; font-weight: 700; line-height: 1.45; }

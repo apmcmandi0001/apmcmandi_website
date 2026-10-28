@@ -2,9 +2,11 @@
 // शेतकरी हिशेब पट्टी — farmer bill print (same text & layout as the app's PDF)
 // Half A4 landscape (A5 landscape). Opens a print window; "Save as PDF" also works.
 // data = result of broker_web_make_farmer_bill / broker_web_farmer_bill_print
+// data.texts = the mandi's changed words (table bill_text); missing → original
 // =============================================================================
 
-const SUBTITLE = 'परिशिष्ट क्र. १/मार्गदर्शक तत्वे १५ - धान्य/तेलबिया हिशेब पट्टी'
+import { mergeBillTexts } from './billTexts'
+
 const ROWS_PER_PAGE = 13
 
 const n = (v) => Number(v) || 0
@@ -28,7 +30,8 @@ const pattiNo = (firm, no) => {
   return ini ? `${ini}/${no}` : String(no)
 }
 
-function page(d, rows, last, pageNo, pageCount) {
+function page(d, t, rows, last, pageNo, pageCount) {
+  const T = (k) => esc(t[k])
   const body = rows
     .map(
       (r) => `<tr>
@@ -46,32 +49,32 @@ function page(d, rows, last, pageNo, pageCount) {
   const empty = Array.from({ length: Math.max(0, ROWS_PER_PAGE - rows.length) }, () => '<tr class="e">' + '<td></td>'.repeat(8) + '</tr>').join('')
 
   const totalRow = last
-    ? `<tr class="tot"><td></td><td class="r"><b>Total</b></td><td>${d.totalBags}</td><td>${d.totalLoose > 0 ? kg(d.totalLoose) : ''}</td><td></td>
+    ? `<tr class="tot"><td></td><td class="r"><b>${T('total')}</b></td><td>${d.totalBags}</td><td>${d.totalLoose > 0 ? kg(d.totalLoose) : ''}</td><td></td>
        <td>${d.totalQtl.toFixed(2)}</td><td></td><td>${m2(d.gross)}</td></tr>`
-    : `<tr class="tot"><td></td><td class="r" colspan="7">पुढे चालू ... (${pageNo}/${pageCount})</td></tr>`
+    : `<tr class="tot"><td></td><td class="r" colspan="7">${T('continued')} (${pageNo}/${pageCount})</td></tr>`
 
   const footer = last
     ? `<div class="foot">
         <div class="charges">
-          <div><span>उतराई/फोडाई :</span><span>${m2(d.utrai)}</span></div>
-          <div><span>मापाई / तोलाई :</span><span>${m2(d.mapai)}</span></div>
-          <div><span>हमाली :</span><span>${m2(d.hamali)}</span></div>
-          ${d.other > 0.009 ? `<div><span>मंडी शुल्क :</span><span>${m2(d.other)}</span></div>` : ''}
-          <div><span>एकुण खर्च :</span><span>${m2(d.expenses)}</span></div>
+          <div><span>${T('utrai')}</span><span>${m2(d.utrai)}</span></div>
+          <div><span>${T('mapai')}</span><span>${m2(d.mapai)}</span></div>
+          <div><span>${T('hamali')}</span><span>${m2(d.hamali)}</span></div>
+          ${d.other > 0.009 ? `<div><span>${T('mandiCharge')}</span><span>${m2(d.other)}</span></div>` : ''}
+          <div><span>${T('expenses')}</span><span>${m2(d.expenses)}</span></div>
         </div>
         <div class="mid">
-          <div>चुकारा नगदी/चेक द्वारे मिळाला.</div>
+          <div>${T('received')}</div>
           <div class="sign">
-            <div><span>शेतकऱ्याची सही</span><small>Amount : 0.00</small></div>
-            <div><span>अडत्याची सही</span><small>चेक नंबर</small></div>
+            <div><span>${T('signFarmer')}</span><small>${T('amountLabel')} 0.00</small></div>
+            <div><span>${T('signBroker')}</span><small>${T('cheque')}</small></div>
             <div class="mode">${esc(d.mode)}</div>
           </div>
         </div>
         <div class="totals">
-          <div><span>मापाई/हमाली रू</span><span>${m2(d.expenses)}</span></div>
-          <div class="ln"><span>रक्कम रू</span><span>${m2(d.amount)}</span></div>
-          <div><span>ॲडव्हांस रू</span><span>${m2(0)}</span></div>
-          <div class="ln big"><span>नि. देय रक्कम रू</span><b>${m2(d.amount)}</b></div>
+          <div><span>${T('rExpenses')}</span><span>${m2(d.expenses)}</span></div>
+          <div class="ln"><span>${T('rAmount')}</span><span>${m2(d.amount)}</span></div>
+          <div><span>${T('rAdvance')}</span><span>${m2(0)}</span></div>
+          <div class="ln big"><span>${T('rNet')}</span><b>${m2(d.amount)}</b></div>
         </div>
       </div>`
     : ''
@@ -80,17 +83,17 @@ function page(d, rows, last, pageNo, pageCount) {
     <div class="h1">${esc(d.line1)}</div>
     ${d.line2 ? `<div class="h2">${esc(d.line2)}</div>` : ''}
     ${d.address ? `<div class="h3">${esc(d.address)}</div>` : ''}
-    <div class="h4">${SUBTITLE}</div>
+    <div class="h4">${T('subtitle')}</div>
     <div class="info">
-      <div class="row"><span><b>अडत्याचे नांव :</b> ${esc(d.brokerLine)}</span><span>पट्टी नंबर : ${esc(d.pattiNo)}</span></div>
-      <div class="row"><span><b>शेतकऱ्याचे नांव :</b> <big>${esc(d.farmer)}</big></span>
-        <span>गांव : <big><b>${esc(d.village)}</b></big></span><span>दिनांक : ${esc(d.date)}</span></div>
+      <div class="row"><span><b>${T('brokerLabel')}</b> ${esc(d.brokerLine)}</span><span>${T('pattiLabel')} ${esc(d.pattiNo)}</span></div>
+      <div class="row"><span><b>${T('farmerLabel')}</b> <big>${esc(d.farmer)}</big></span>
+        <span>${T('villageLabel')} <big><b>${esc(d.village)}</b></big></span><span>${T('dateLabel')} ${esc(d.date)}</span></div>
     </div>
     <table>
       <thead>
-        <tr><th rowspan="2">शेतमालाचे प्रकार</th><th rowspan="2">खरेदीदाराचे नाव</th><th colspan="2">शेतमालाचे पोते</th>
-            <th rowspan="2">भरती किलो</th><th>शेतमालाचे नक्की</th><th rowspan="2">दर/भाव प्र. क्विंटल</th><th rowspan="2">एकुण रूपये</th></tr>
-        <tr><th>नग</th><th>चुं.</th><th>वजन क्विंटल किलो</th></tr>
+        <tr><th rowspan="2">${T('colCommodity')}</th><th rowspan="2">${T('colBuyer')}</th><th colspan="2">${T('colBagsGroup')}</th>
+            <th rowspan="2">${T('colBagKg')}</th><th>${T('colWeight1')}</th><th rowspan="2">${T('colRate')}</th><th rowspan="2">${T('colAmount')}</th></tr>
+        <tr><th>${T('colBags')}</th><th>${T('colLoose')}</th><th>${T('colWeight2')}</th></tr>
       </thead>
       <tbody>${body}${empty}</tbody>
       <tfoot>${totalRow}</tfoot>
@@ -126,7 +129,7 @@ const STYLE = `
     .sign div { display: grid; text-align: center; }
     .sign small { font-size: 7.5pt; margin-top: 4px; }
     .sign .mode { font-size: 13pt; font-weight: 700; }
-    .bar { position: sticky; top: 0; background: #14532d; color: #fff; padding: 8px; text-align: center; font-family: system-ui; }
+    .bar { position: sticky; top: 0; background: #0e7490; color: #fff; padding: 8px; text-align: center; font-family: system-ui; }
     .bar button { font: inherit; font-weight: 700; padding: 6px 16px; border-radius: 8px; border: 0; cursor: pointer; }
     @media print { body { background: #fff; } .pg { margin: 0; } .bar { display: none; } }
   `
@@ -146,10 +149,11 @@ export function farmerBillPages(data) {
   const expenses = sum('mandi_charge_amount')
   const gross = sum('gross_amount')
 
+  const t = mergeBillTexts('farmer', data?.texts)
   const d = {
-    line1: md.line1 || md.name || '',
-    line2: md.line2 || '',
-    address: md.address || '',
+    line1: t.header1 || md.line1 || md.name || '',
+    line2: t.header2 || md.line2 || '',
+    address: t.address || md.address || '',
     brokerLine: phone ? `${firm} ${mrDigits(phone)}` : firm,
     pattiNo: pattiNo(firm, b.bill_no),
     farmer: String(b.farmer_name || '').toUpperCase(),
@@ -172,19 +176,24 @@ export function farmerBillPages(data) {
   for (let i = 0; i < lines.length; i += ROWS_PER_PAGE) pages.push(lines.slice(i, i + ROWS_PER_PAGE))
   if (!pages.length) pages.push([])
 
-  return `${pages.map((p, i) => page(d, p, i === pages.length - 1, i + 1, pages.length)).join('')}`
+  return `${pages.map((p, i) => page(d, t, p, i === pages.length - 1, i + 1, pages.length)).join('')}`
+}
+
+/** Whole html page for many bills. print = add the Print bar and open the print box. */
+export function farmerBillsHtml(list, title = 'Bills', print = true) {
+  return `<!doctype html><html><head><meta charset="utf-8">
+  <title>${esc(title)}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+  <style>${STYLE}</style></head><body>
+  ${print ? '<div class="bar"><button onclick="window.print()">Print / Save PDF</button></div>' : ''}
+  ${list.map((d) => farmerBillPages(d)).join('')}
+  ${print ? '<script>document.fonts && document.fonts.ready.then(function(){ setTimeout(function(){ window.print() }, 300) })</script>' : ''}
+  </body></html>`
 }
 
 /** Prints many bills in one window (one after another). Returns false if pop-ups are blocked. */
 export function printFarmerBills(list, win, title = 'Bills') {
-  const html = `<!doctype html><html><head><meta charset="utf-8">
-  <title>${esc(title)}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
-  <style>${STYLE}</style></head><body>
-  <div class="bar"><button onclick="window.print()">Print / Save PDF</button></div>
-  ${list.map((d) => farmerBillPages(d)).join('')}
-  <script>document.fonts && document.fonts.ready.then(function(){ setTimeout(function(){ window.print() }, 300) })</script>
-  </body></html>`
+  const html = farmerBillsHtml(list, title, true)
   const w = win || window.open('', '_blank', 'width=1000,height=800')
   if (!w) return false
   w.document.open()

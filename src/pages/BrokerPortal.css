@@ -1,12 +1,12 @@
 /* Broker login + bills page */
 .bp-wrap {
   padding: 48px 0 140px;
-  --bp-green: #14532d;
-  --bp-green-2: #1f7a45;
-  --bp-soft: #eef6f0;
-  --bp-line: #dfe7e1;
-  --bp-text: #1b2a20;
-  --bp-muted: #5f6f64;
+  --bp-brand: #0e7490;
+  --bp-brand-2: #0891b2;
+  --bp-soft: #ecfeff;
+  --bp-line: #dbe7ea;
+  --bp-text: #0f2a33;
+  --bp-muted: #5b7078;
   --bp-red: #b42318;
 }
 
@@ -17,7 +17,7 @@
   border: 1px solid var(--bp-line);
   border-radius: 18px;
   padding: 28px;
-  box-shadow: 0 10px 30px rgba(20, 83, 45, 0.06);
+  box-shadow: 0 10px 30px rgba(8, 47, 73, 0.06);
   color: var(--bp-text);
 }
 
@@ -58,8 +58,8 @@
 }
 .bp-input:focus {
   outline: none;
-  border-color: var(--bp-green-2);
-  box-shadow: 0 0 0 3px rgba(31, 122, 69, 0.15);
+  border-color: var(--bp-brand-2);
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15);
 }
 .bp-pin {
   letter-spacing: 8px;
@@ -73,7 +73,7 @@
   border: 0;
   border-radius: 999px;
   padding: 12px 22px;
-  background: var(--bp-green);
+  background: var(--bp-brand);
   color: #fff;
   cursor: pointer;
 }
@@ -87,8 +87,8 @@
 }
 .bp-btn-outline {
   background: #fff;
-  color: var(--bp-green);
-  border: 1.5px solid var(--bp-green);
+  color: var(--bp-brand);
+  border: 1.5px solid var(--bp-brand);
 }
 
 .bp-error {
@@ -110,7 +110,7 @@
   margin-bottom: 20px;
 }
 .bp-mandi {
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
   font-weight: 600;
 }
 
@@ -135,7 +135,7 @@
   cursor: pointer;
 }
 .bp-tabs button.active {
-  background: var(--bp-green);
+  background: var(--bp-brand);
   color: #fff;
 }
 
@@ -190,8 +190,8 @@
   cursor: pointer;
 }
 .bp-row:hover {
-  border-color: var(--bp-green-2);
-  background: #fafdfb;
+  border-color: var(--bp-brand-2);
+  background: #f8fcfd;
 }
 .bp-row-main {
   min-width: 0;
@@ -199,7 +199,7 @@
 .bp-row-no {
   font-weight: 700;
   font-size: 13px;
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
 }
 .bp-fy {
   color: var(--bp-muted);
@@ -252,8 +252,8 @@
   cursor: pointer;
 }
 .bp-subtabs button.active {
-  border-color: var(--bp-green);
-  color: var(--bp-green);
+  border-color: var(--bp-brand);
+  color: var(--bp-brand);
   background: var(--bp-soft);
 }
 .bp-group {
@@ -262,7 +262,7 @@
   overflow: hidden;
 }
 .bp-group.open {
-  border-color: var(--bp-green-2);
+  border-color: var(--bp-brand-2);
 }
 .bp-group-head {
   border: 0;
@@ -270,7 +270,7 @@
 }
 .bp-group-body {
   border-top: 1px solid var(--bp-line);
-  background: #fafdfb;
+  background: #f8fcfd;
   padding: 6px 16px 14px;
 }
 .bp-line {

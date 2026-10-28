@@ -4,6 +4,7 @@ import { useLang } from '../i18n'
 import { brand } from '../config'
 import { fetchMandis, telHref, waHref } from '../data'
 import Icon, { BrandMark, SocialIcon, WhatsAppIcon } from './Icon'
+import Wordmark from './Wordmark'
 
 export default function Footer() {
   const { t, lang } = useLang()
@@ -51,7 +52,7 @@ export default function Footer() {
         <div className="footer-brand">
           <Link to="/" className="footer-logo">
             <BrandMark />
-            <span>{brand.name}</span>
+            <Wordmark onDark />
           </Link>
           <p>{brand.tagline[lang]}</p>
           {socials.length > 0 && (

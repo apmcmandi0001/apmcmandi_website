@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useLang, languages } from '../i18n'
 import { brand } from '../config'
 import Icon, { BrandMark } from './Icon'
+import Wordmark from './Wordmark'
 
 export const navItems = [
   ['/', 'home'],
@@ -46,7 +47,9 @@ export default function Header() {
         <Link to="/" className="brand" aria-label={brand.name}>
           <BrandMark />
           <span className="brand-text">
-            <span className="brand-name">{brand.name}</span>
+            <span className="brand-name dm-brand-name">
+              <Wordmark />
+            </span>
             <span className="brand-sub">{brand.tagline[lang]}</span>
           </span>
         </Link>

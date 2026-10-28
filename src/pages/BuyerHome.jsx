@@ -252,7 +252,7 @@ const compact = (v) => {
   if (v <= 0) return ''
   return '₹' + Math.round(v)
 }
-const PALETTE = ['#1f7a45', '#0e7490', '#c9852b', '#6a4c93', '#b5523b', '#4f6d7a']
+const PALETTE = ['#0e7490', '#c9852b', '#6a4c93', '#38bdf8', '#b5523b', '#4f6d7a']
 const initial = (s) => (String(s || '?').trim().charAt(0) || '?').toUpperCase()
 
 /** totals of a list of lots (only weighed lots count in qty / amount) */

@@ -35,7 +35,7 @@ const STYLE = `
     .note { margin-top: 10px; font-size: 8.5pt; color: #444; }
     .signs { display: flex; justify-content: space-between; margin-top: 46px; }
     .signs div { width: 40%; border-top: 1px solid #333; text-align: center; padding-top: 4px; font-size: 9pt; }
-    .bar { position: sticky; top: 0; background: #14532d; padding: 8px; text-align: center; font-family: system-ui; }
+    .bar { position: sticky; top: 0; background: #0e7490; padding: 8px; text-align: center; font-family: system-ui; }
     .bar button { font: inherit; font-weight: 700; padding: 6px 16px; border-radius: 8px; border: 0; cursor: pointer; }
     @media print { .bar { display: none; } }
   `

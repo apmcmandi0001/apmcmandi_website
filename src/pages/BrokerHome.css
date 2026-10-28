@@ -1,4 +1,4 @@
-/* Broker Dashboard (website) — uses the website's green scheme from BrokerPortal.css */
+/* Broker Dashboard (website) — uses the website's cyan scheme from BrokerPortal.css */
 
 .bh {
   max-width: 900px;
@@ -17,8 +17,8 @@
   border-radius: 20px;
   padding: 20px;
   color: #fff;
-  background: linear-gradient(135deg, var(--bp-green) 0%, var(--bp-green-2) 100%);
-  box-shadow: 0 10px 30px rgba(20, 83, 45, 0.25);
+  background: linear-gradient(135deg, var(--bp-brand) 0%, var(--bp-brand-2) 100%);
+  box-shadow: 0 10px 30px rgba(8, 47, 73, 0.25);
 }
 .bh-head-top {
   display: flex;
@@ -79,7 +79,7 @@
   background: transparent;
   font-size: 24px;
   line-height: 1;
-  color: var(--bp-green);
+  color: var(--bp-brand);
   cursor: pointer;
 }
 .bh-date button:disabled {
@@ -122,7 +122,7 @@
 .bh-search button {
   border: 0;
   background: var(--bp-soft);
-  color: var(--bp-green);
+  color: var(--bp-brand);
   font: inherit;
   font-weight: 800;
   padding: 0 16px;
@@ -161,7 +161,7 @@
 }
 .bh-tile:not(:disabled):hover {
   transform: translateY(-2px);
-  border-color: var(--bp-green-2);
+  border-color: var(--bp-brand-2);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
 }
 .bh-tile.soon {
@@ -177,10 +177,10 @@
   place-items: center;
   margin-bottom: 4px;
   background: var(--bp-soft);
-  color: var(--bp-green);
+  color: var(--bp-brand);
 }
 .bh-tile-farmer .bh-tile-icon {
-  background: var(--bp-green);
+  background: var(--bp-brand);
   color: #fff;
 }
 .bh-tile-buyer .bh-tile-icon {
@@ -231,7 +231,7 @@
 .bh-hero {
   padding: 18px 20px 20px;
   color: #fff;
-  background: linear-gradient(135deg, var(--bp-green-2), var(--bp-green));
+  background: linear-gradient(135deg, var(--bp-brand-2), var(--bp-brand));
 }
 .bh-hero-top {
   display: flex;
@@ -354,15 +354,15 @@
   max-width: 44px;
   margin: 4px 0 6px;
   border-radius: 6px 6px 2px 2px;
-  background: rgba(31, 122, 69, 0.25);
+  background: rgba(8, 145, 178, 0.25);
   transition: height 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .bh-bar.sel .bh-bar-fill {
-  background: linear-gradient(var(--bp-green-2), var(--bp-green));
+  background: linear-gradient(var(--bp-brand-2), var(--bp-brand));
 }
 .bh-bar.sel .bh-bar-val,
 .bh-bar.sel .bh-bar-num {
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
   font-weight: 800;
 }
 .bh-bar-day {
@@ -437,7 +437,7 @@
   cursor: pointer;
 }
 .bh-tr:hover {
-  background: #fbfdfc;
+  background: #f8fcfd;
 }
 .bh-tr span:nth-child(n + 2) {
   text-align: right;
@@ -459,7 +459,7 @@
 }
 .bh-real {
   font-weight: 800;
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
 }
 
 /* ---------- token details ---------- */
@@ -506,10 +506,10 @@
 }
 .bh-block.patti {
   background: var(--bp-soft);
-  border-color: #bbf7d0;
+  border-color: #a5f3fc;
 }
 .bh-block.patti h3 {
-  color: var(--bp-green);
+  color: var(--bp-brand);
 }
 .bh-info {
   display: flex;
@@ -525,7 +525,7 @@
   text-align: right;
 }
 .bh-info.total {
-  border-top: 1px solid #bbf7d0;
+  border-top: 1px solid #a5f3fc;
   margin-top: 4px;
   padding-top: 8px;
   font-size: 16px;

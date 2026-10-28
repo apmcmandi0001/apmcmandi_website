@@ -1,4 +1,4 @@
-/* Farmer bill (website) — green scheme from BrokerPortal.css */
+/* Farmer bill (website) — cyan scheme from BrokerPortal.css */
 
 .fb-farmer {
   display: flex;
@@ -13,7 +13,7 @@
 }
 .fb-farmer.set {
   background: var(--bp-soft);
-  color: var(--bp-green);
+  color: var(--bp-brand);
 }
 
 .fb-add {
@@ -109,7 +109,7 @@
   background: #fff;
 }
 .fb-ded label.on {
-  border-color: var(--bp-green-2);
+  border-color: var(--bp-brand-2);
   background: var(--bp-soft);
 }
 .fb-ded label.locked {
@@ -145,7 +145,7 @@
 }
 .fb-ded small {
   font-size: 11px;
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
   min-height: 14px;
 }
 .fb-ded label.locked small {
@@ -175,7 +175,7 @@
   color: var(--bp-muted);
 }
 .fb-total .big {
-  border-top: 1px solid #bbf7d0;
+  border-top: 1px solid #a5f3fc;
   padding-top: 8px;
   margin-top: 4px;
   font-size: 18px;
@@ -254,9 +254,9 @@
   color: var(--bp-muted);
 }
 .fb-modes .cash {
-  border-color: var(--bp-green-2);
+  border-color: var(--bp-brand-2);
   background: var(--bp-soft);
-  color: var(--bp-green);
+  color: var(--bp-brand);
 }
 .fb-modes .rtgs {
   border-color: #1d4ed8;
@@ -281,19 +281,19 @@
   font-size: 32px;
   font-weight: 800;
   color: #fff;
-  background: var(--bp-green-2);
+  background: var(--bp-brand-2);
 }
 .fb-done-amt {
   font-size: 32px;
   font-weight: 800;
-  color: var(--bp-green);
+  color: var(--bp-brand);
   margin: 6px 0 4px;
 }
 .fb-link {
   margin-top: 14px;
   background: none;
   border: 0;
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -359,7 +359,7 @@
   width: 20px;
   height: 20px;
   margin-top: 2px;
-  accent-color: var(--bp-green-2);
+  accent-color: var(--bp-brand-2);
 }
 .pb-saved {
   margin-top: 10px;
@@ -373,7 +373,7 @@
   font-size: 14px;
 }
 .pb-saved span {
-  color: var(--bp-green-2);
+  color: var(--bp-brand-2);
   font-weight: 700;
 }
 .fb-actions.pb-one {
@@ -479,8 +479,8 @@
   accent-color: #0e7490;
 }
 .tb-tag {
-  background: #dcfce7;
-  color: #166534;
+  background: #cffafe;
+  color: #155e75;
 }
 .tb-broker {
   max-width: 420px;
@@ -534,7 +534,7 @@
   padding: 16px;
   border-radius: 14px;
   border: 1px solid var(--bp-line);
-  background: #fbfdfc;
+  background: #f8fcfd;
   display: grid;
   gap: 12px;
 }
