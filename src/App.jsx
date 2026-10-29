@@ -9,6 +9,7 @@ import MandiRates from './pages/MandiRates'
 import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
+import DeleteAccount from './pages/DeleteAccount'
 import TraderPortal from './pages/TraderPortal'
 import FarmerEntry from './pages/FarmerEntry'
 import NotFound from './pages/NotFound'
@@ -45,6 +46,8 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          {/* Google Play: page explaining how to delete an account */}
+          <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/trader" element={<TraderPortal />} />
           {/* old link: Broker Login now lives inside Trader Login */}
           <Route path="/broker" element={<Navigate to="/trader" replace />} />

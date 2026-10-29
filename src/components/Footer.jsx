@@ -124,10 +124,13 @@ export default function Footer() {
                 {t.common.whatsapp}
               </a>
             </li>
-            <li>
-              <Icon name="mail" size={18} />
-              <a href={`mailto:${brand.email}`}>{brand.email}</a>
-            </li>
+            {/* email shown only when one is set in config.js */}
+            {brand.email && (
+              <li>
+                <Icon name="mail" size={18} />
+                <a href={`mailto:${brand.email}`}>{brand.email}</a>
+              </li>
+            )}
           </ul>
         </div>
       </div>

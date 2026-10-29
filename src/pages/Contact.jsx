@@ -29,12 +29,15 @@ export default function Contact() {
                   {brand.phone}
                 </a>
               </li>
-              <li>
-                <Icon name="mail" />
-                <a className="value" href={`mailto:${brand.email}`}>
-                  {brand.email}
-                </a>
-              </li>
+              {/* email shown only when one is set in config.js */}
+              {brand.email && (
+                <li>
+                  <Icon name="mail" />
+                  <a className="value" href={`mailto:${brand.email}`}>
+                    {brand.email}
+                  </a>
+                </li>
+              )}
             </ul>
             <div className="btn-row">
               <a className="btn btn-primary" href={telHref(brand.phoneDial)}>
