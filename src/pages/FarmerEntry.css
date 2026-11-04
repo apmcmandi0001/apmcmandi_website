@@ -30,3 +30,6 @@
 .fe-summary td { padding: 8px 4px; border-bottom: 1px dashed var(--fe-line); }
 .fe-summary td:first-child { color: var(--fe-muted); }
 .fe-summary td:last-child { font-weight: 700; text-align: right; }
+.fe-langs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: -4px 0 16px; }
+.fe-langs button { font: inherit; font-size: 16px; font-weight: 700; padding: 10px 4px; border-radius: 12px; border: 2px solid var(--fe-line); background: #fff; color: var(--fe-text); cursor: pointer; }
+.fe-langs button.on { background: var(--fe-brand); border-color: var(--fe-brand); color: #fff; }
