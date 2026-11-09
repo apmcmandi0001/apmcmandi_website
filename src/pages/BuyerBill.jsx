@@ -7,7 +7,8 @@ import './FarmerBill.css'
 // =============================================================================
 // Buyer bill (website) — same as the app's "Buyer Bills":
 //   buyers with sold goods not billed yet → pick a buyer → everything of that
-//   buyer is on ONE bill → brokerage % (TDS 2% of brokerage is cut) → Generate → print
+//   buyer is on ONE bill → brokerage % → TDS switch (OFF by default; ON = 2% of
+//   brokerage is cut) → Generate → print
 // =============================================================================
 
 const TEXT = {
@@ -29,6 +30,9 @@ const TEXT = {
     amount: 'Amount',
     brokerageAmt: 'Brokerage',
     tds: 'TDS 2% on brokerage',
+    tdsSwitch: 'Cut TDS',
+    tdsOn: '2% of brokerage will be cut',
+    tdsOff: 'No TDS on this bill',
     total: 'Net payable by buyer',
     generate: 'Generate Bill',
     wait: 'Please wait…',
@@ -63,6 +67,9 @@ const TEXT = {
     amount: 'रकम',
     brokerageAmt: 'दलाली',
     tds: 'दलाली पर TDS 2%',
+    tdsSwitch: 'TDS काटें',
+    tdsOn: 'दलाली का 2% TDS कटेगा',
+    tdsOff: 'इस बिल पर TDS नहीं',
     total: 'खरीदार की देय रकम',
     generate: 'बिल बनाएं',
     wait: 'कृपया रुकें…',
@@ -97,6 +104,9 @@ const TEXT = {
     amount: 'रक्कम',
     brokerageAmt: 'अडत',
     tds: 'अडतीवर TDS 2%',
+    tdsSwitch: 'TDS कापा',
+    tdsOn: 'अडतीचा 2% TDS कापला जाईल',
+    tdsOff: 'या बिलावर TDS नाही',
     total: 'खरेदीदाराची देय रक्कम',
     generate: 'बिल बनवा',
     wait: 'कृपया थांबा…',
@@ -126,6 +136,7 @@ export default function BuyerBill({ lang, acc, onBack, onExpired }) {
   const [search, setSearch] = useState('')
   const [buyerId, setBuyerId] = useState(null)
   const [pct, setPct] = useState('')
+  const [applyTds, setApplyTds] = useState(false) // TDS only when turned ON
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const [info, setInfo] = useState('')
@@ -184,7 +195,7 @@ export default function BuyerBill({ lang, acc, onBack, onExpired }) {
 
   const gross = items.reduce((s, i) => s + num(i.amount), 0)
   const brokerage = (gross * num(pct)) / 100
-  const tds = (brokerage * 2) / 100
+  const tds = applyTds ? (brokerage * 2) / 100 : 0
   const total = gross + brokerage - tds
 
   async function generate() {
@@ -198,6 +209,7 @@ export default function BuyerBill({ lang, acc, onBack, onExpired }) {
         buyerId,
         num(pct),
         items.map((i) => i.token_id),
+        applyTds,
       )
       if (!r?.ok) {
         if (r?.error === 'changed') {
@@ -239,6 +251,7 @@ export default function BuyerBill({ lang, acc, onBack, onExpired }) {
               setDone(null)
               setBuyerId(null)
               setPct('')
+              setApplyTds(false)
               setReload((n) => n + 1)
             }}
           >
@@ -367,6 +380,32 @@ export default function BuyerBill({ lang, acc, onBack, onExpired }) {
         />
       </label>
 
+      <label
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          margin: '12px 0',
+          padding: '12px 14px',
+          borderRadius: 14,
+          border: `1.5px solid ${applyTds ? 'var(--bp-brand, #0e7490)' : 'var(--bp-line, #dbe7ea)'}`,
+          background: applyTds ? 'var(--bp-soft, #ecfeff)' : '#fff',
+          cursor: 'pointer',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={applyTds}
+          disabled={busy}
+          onChange={(e) => setApplyTds(e.target.checked)}
+          style={{ width: 22, height: 22, accentColor: 'var(--bp-brand, #0e7490)', flexShrink: 0 }}
+        />
+        <span style={{ display: 'grid', gap: 2 }}>
+          <b style={{ fontSize: 15 }}>{T.tdsSwitch}</b>
+          <small className="bp-muted">{applyTds ? T.tdsOn : T.tdsOff}</small>
+        </span>
+      </label>
+
       <div className="fb-total">
         <div>
           <span>{T.amount}</span>
@@ -378,10 +417,12 @@ export default function BuyerBill({ lang, acc, onBack, onExpired }) {
           </span>
           <b>+ {inr(brokerage)}</b>
         </div>
-        <div>
-          <span>{T.tds}</span>
-          <b>− {inr(tds)}</b>
-        </div>
+        {applyTds && (
+          <div>
+            <span>{T.tds}</span>
+            <b>− {inr(tds)}</b>
+          </div>
+        )}
         <div className="big">
           <span>{T.total}</span>
           <b>{inr(total)}</b>
