@@ -1,27 +1,34 @@
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { inr, prettyDate } from '../data'
-import { fetchBillToken, addToPending, makeFarmerBill } from '../trader/brokerHomeApi'
+import { fetchBillToken, fetchReadyTokens, addToPending, makeFarmerBill } from '../trader/brokerHomeApi'
 import { printFarmerBill } from '../trader/farmerBillPrint'
 import './FarmerBill.css'
+import './BrokerExtra.css'
 
 // =============================================================================
 // Farmer bill (website) — same as the app's "Bill for Farmer":
-//   pick date → add token numbers (same farmer only) → one deduction per token
-//   (Utrai / Mapai / Hamali, ₹ per quintal) → Add to Pending  or  Generate Bill
-//   (CASH / RTGS) → print the bill
+//   pick date → list of that date's tokens ready for a bill (search, tick)
+//   → one deduction per token (Utrai / Mapai / Hamali, ₹ per quintal)
+//   → tokens of different farmers may go in one bill: pick whose name it is in
+//   → Add to Pending  or  Generate Bill (CASH / RTGS) → print the bill
 // =============================================================================
 
 const TEXT = {
   en: {
     title: 'Farmer bill',
     back: '← Dashboard',
-    farmerFirst: 'Farmer is set by the first token',
-    farmer: 'Farmer',
     date: 'Token date',
-    addToken: 'Add token number',
-    tokenNo: 'Token No.',
-    add: 'Add',
-    none: 'No tokens added yet',
+    search: 'Search token no. or farmer name',
+    addNo: 'Add',
+    ready: 'Ready for bill on this date',
+    readyNone: 'No weighed tokens waiting for a bill on this date',
+    readyNoneFound: 'No token found — type the token number and press Add',
+    otherFarmer: 'different farmer — can still be added',
+    selected: 'In this bill',
+    none: 'Tick tokens above to add them to the bill',
+    billFor: 'Bill in the name of',
+    billForNote: 'This bill has tokens of different farmers',
+    farmer: 'Farmer',
     qtl: 'qtl',
     gross: 'Gross',
     deduction: 'Deduction (only one)',
@@ -44,12 +51,13 @@ const TEXT = {
     rtgs: 'Bank transfer',
     cancel: 'Cancel',
     wait: 'Please wait…',
-    added: '✓ {n} tokens ({f}) added to Pending Bills',
+    added: '✓ {n} tokens added to Pending Bills',
     made: 'Bill made',
     billNo: 'Bill No.',
     print: 'Print bill',
     another: 'Make another bill',
     popup: 'Allow pop-ups for this website to print the bill',
+    load: 'Could not load. Please try again',
     errors: {
       bad: 'Enter a valid token number',
       not_found: 'Token not found on this date',
@@ -59,10 +67,10 @@ const TEXT = {
       in_pending: 'Already in Pending — make its bill from Pending Bills',
       no_auction: 'Auction pending for this token',
       no_weight: 'Weighing pending for this token',
-      other_farmer: 'This token is for a different farmer',
       no_charge: 'Enter Utrai, Mapai or Hamali for every token',
       duplicate: 'A token was added twice',
       no_mode: 'Choose Cash or RTGS',
+      bad_name: 'Choose whose name the bill is in',
       server: 'Server error. Please try again',
     },
     tokenWord: 'Token',
@@ -70,13 +78,18 @@ const TEXT = {
   hi: {
     title: 'किसान का बिल',
     back: '← डैशबोर्ड',
-    farmerFirst: 'किसान पहले टोकन से तय होगा',
-    farmer: 'किसान',
     date: 'टोकन की तारीख',
-    addToken: 'टोकन नंबर जोड़ें',
-    tokenNo: 'टोकन नं.',
-    add: 'जोड़ें',
-    none: 'कोई टोकन नहीं जोड़ा',
+    search: 'टोकन नंबर या किसान का नाम खोजें',
+    addNo: 'जोड़ें',
+    ready: 'इस दिन बिल के लिए तैयार',
+    readyNone: 'इस दिन बिल के लिए कोई तौला हुआ टोकन नहीं',
+    readyNoneFound: 'टोकन नहीं मिला — टोकन नंबर लिखकर जोड़ें दबाएं',
+    otherFarmer: 'दूसरा किसान — फिर भी जोड़ सकते हैं',
+    selected: 'इस बिल में',
+    none: 'ऊपर टोकन पर टिक करके बिल में जोड़ें',
+    billFor: 'बिल किसके नाम पर?',
+    billForNote: 'इस बिल में अलग-अलग किसानों के टोकन हैं',
+    farmer: 'किसान',
     qtl: 'क्विंटल',
     gross: 'कुल',
     deduction: 'कटौती चुनें (केवल एक)',
@@ -99,12 +112,13 @@ const TEXT = {
     rtgs: 'बैंक ट्रांसफर',
     cancel: 'रद्द करें',
     wait: 'कृपया रुकें…',
-    added: '✓ {n} टोकन ({f}) पेंडिंग में जोड़े',
+    added: '✓ {n} टोकन पेंडिंग में जोड़े',
     made: 'बिल बन गया',
     billNo: 'बिल नं.',
     print: 'बिल प्रिंट करें',
     another: 'दूसरा बिल बनाएं',
     popup: 'बिल प्रिंट के लिए इस वेबसाइट के पॉप-अप चालू करें',
+    load: 'नहीं खुला। फिर से कोशिश करें',
     errors: {
       bad: 'सही टोकन नंबर डालें',
       not_found: 'इस तारीख में टोकन नहीं मिला',
@@ -114,10 +128,10 @@ const TEXT = {
       in_pending: 'यह टोकन पहले से पेंडिंग में है, बिल पेंडिंग बिल से बनाएं',
       no_auction: 'लिलाव अभी बाकी है',
       no_weight: 'तोलाई अभी बाकी है',
-      other_farmer: 'यह टोकन दूसरे किसान का है',
       no_charge: 'हर टोकन के लिए उतराई / मापाई / हमाली में से एक डालें',
       duplicate: 'एक टोकन दो बार जोड़ा गया',
       no_mode: 'नगद या RTGS चुनें',
+      bad_name: 'बिल किसके नाम पर है, चुनें',
       server: 'सर्वर त्रुटि। फिर से कोशिश करें',
     },
     tokenWord: 'टोकन',
@@ -125,13 +139,18 @@ const TEXT = {
   mr: {
     title: 'शेतकरी बिल',
     back: '← डॅशबोर्ड',
-    farmerFirst: 'शेतकरी पहिल्या टोकनवरून ठरेल',
-    farmer: 'शेतकरी',
     date: 'टोकनची तारीख',
-    addToken: 'टोकन नंबर जोडा',
-    tokenNo: 'टोकन नं.',
-    add: 'जोडा',
-    none: 'अजून टोकन जोडले नाही',
+    search: 'टोकन नंबर किंवा शेतकऱ्याचे नाव शोधा',
+    addNo: 'जोडा',
+    ready: 'या दिवशी बिलासाठी तयार',
+    readyNone: 'या दिवशी बिलासाठी तोललेला टोकन नाही',
+    readyNoneFound: 'टोकन सापडला नाही — टोकन नंबर लिहून जोडा दाबा',
+    otherFarmer: 'दुसरा शेतकरी — तरीही जोडू शकता',
+    selected: 'या बिलात',
+    none: 'वरील टोकनवर टिक करून बिलात जोडा',
+    billFor: 'बिल कोणाच्या नावावर?',
+    billForNote: 'या बिलात वेगवेगळ्या शेतकऱ्यांचे टोकन आहेत',
+    farmer: 'शेतकरी',
     qtl: 'क्विंटल',
     gross: 'एकूण',
     deduction: 'कपात निवडा (फक्त एक)',
@@ -154,12 +173,13 @@ const TEXT = {
     rtgs: 'बँक ट्रान्सफर',
     cancel: 'रद्द करा',
     wait: 'कृपया थांबा…',
-    added: '✓ {n} टोकन ({f}) पेंडिंगमध्ये जोडले',
+    added: '✓ {n} टोकन पेंडिंगमध्ये जोडले',
     made: 'बिल तयार झाले',
     billNo: 'बिल नं.',
     print: 'बिल प्रिंट करा',
     another: 'दुसरे बिल बनवा',
     popup: 'बिल प्रिंटसाठी या वेबसाइटचे पॉप-अप चालू करा',
+    load: 'उघडले नाही. पुन्हा प्रयत्न करा',
     errors: {
       bad: 'योग्य टोकन नंबर टाका',
       not_found: 'या तारखेला टोकन सापडला नाही',
@@ -169,10 +189,10 @@ const TEXT = {
       in_pending: 'हा टोकन आधीच पेंडिंगमध्ये आहे, बिल पेंडिंग बिलमधून बनवा',
       no_auction: 'लिलाव अजून बाकी आहे',
       no_weight: 'तोलाई अजून बाकी आहे',
-      other_farmer: 'हा टोकन दुसऱ्या शेतकऱ्याचा आहे',
       no_charge: 'प्रत्येक टोकनसाठी उतराई / मापाई / हमाली पैकी एक टाका',
       duplicate: 'एक टोकन दोनदा जोडला',
       no_mode: 'रोख किंवा RTGS निवडा',
+      bad_name: 'बिल कोणाच्या नावावर आहे ते निवडा',
       server: 'सर्व्हर त्रुटी. पुन्हा प्रयत्न करा',
     },
     tokenWord: 'टोकन',
@@ -188,6 +208,7 @@ const ymd = (d) => {
 }
 const farmerKey = (name, phone) =>
   `${String(name || '').trim().toLowerCase().replace(/\s+/g, ' ')}|${String(phone || '').replace(/\s+/g, '')}`
+const lineKey = (l) => farmerKey(l.farmer_name, l.farmer_phone_number)
 
 /** one line = token from the server + chosen deduction */
 const lineCharge = (l) => {
@@ -196,18 +217,23 @@ const lineCharge = (l) => {
   return { type, rate, amount: rate * num(l.total_weight_quintal) }
 }
 const lineGross = (l) => num(l.total_weight_quintal) * num(l.rate_per_quintal)
+const newLine = (r) => ({ ...r, rates: { utrai: '', mapai: '', hamali: '' } })
 
-export default function FarmerBill({ lang, acc, onBack, onExpired }) {
+export default function FarmerBill({ lang, acc, onBack, onExpired, initialDate, preselectTokenId }) {
   const T = TEXT[lang] || TEXT.en
-  const [date, setDate] = useState(() => ymd(new Date()))
-  const [no, setNo] = useState('')
+  const [date, setDate] = useState(() => initialDate || ymd(new Date()))
+  const [ready, setReady] = useState([])
+  const [readyLoading, setReadyLoading] = useState(true)
+  const [readyReload, setReadyReload] = useState(0)
+  const [search, setSearch] = useState('')
   const [lines, setLines] = useState([])
+  const [billKey, setBillKey] = useState(null) // farmer the bill is in the name of
   const [busy, setBusy] = useState('') // add | pending | bill
   const [err, setErr] = useState('')
   const [ok, setOk] = useState('')
   const [askMode, setAskMode] = useState(false)
   const [done, setDone] = useState(null) // print data of the bill just made
-  const inputRef = useRef(null)
+  const preselected = useRef(false)
 
   const errText = (r) => {
     const base = T.errors[r?.error] || T.errors.server
@@ -218,23 +244,73 @@ export default function FarmerBill({ lang, acc, onBack, onExpired }) {
     else setErr(T.errors.server)
   }
 
-  async function add(e) {
+  // ready tokens of the selected date
+  useEffect(() => {
+    let alive = true
+    setReadyLoading(true)
+    fetchReadyTokens(acc.token, date)
+      .then((d) => {
+        if (!alive) return
+        setReady(d)
+        // opened from Token progress → tick that token
+        if (preselectTokenId && !preselected.current) {
+          preselected.current = true
+          const t = d.find((x) => x.token_id === preselectTokenId)
+          if (t) setLines((ls) => (ls.some((l) => l.token_id === t.token_id) ? ls : [...ls, newLine(t)]))
+        }
+      })
+      .catch((e) => alive && fail(e))
+      .finally(() => alive && setReadyLoading(false))
+    return () => {
+      alive = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [acc.token, date, readyReload])
+
+  // farmers in this bill
+  const farmers = useMemo(() => {
+    const map = new Map()
+    for (const l of lines) {
+      const k = lineKey(l)
+      if (!map.has(k)) map.set(k, { key: k, name: l.farmer_name, phone: l.farmer_phone_number, tokenId: l.token_id })
+    }
+    return [...map.values()]
+  }, [lines])
+  const chosen = farmers.find((f) => f.key === billKey) || farmers[0] || null
+
+  const picked = new Set(lines.map((l) => l.token_id))
+  const q = search.trim().toLowerCase()
+  const readyShown = ready.filter(
+    (t) => !q || String(t.token_number).startsWith(q) || String(t.farmer_name || '').toLowerCase().includes(q),
+  )
+
+  function toggle(t) {
+    setErr('')
+    setOk('')
+    if (picked.has(t.token_id)) setLines((ls) => ls.filter((l) => l.token_id !== t.token_id))
+    else setLines((ls) => [...ls, newLine(t)])
+  }
+
+  /** Token number typed that is not in the list (e.g. checks why it is not ready) */
+  async function addByNumber(e) {
     e.preventDefault()
     setErr('')
     setOk('')
-    const n = parseInt(no, 10)
-    if (!n || n < 1) return setErr(T.errors.bad)
+    const n = parseInt(search, 10)
+    if (!n || n < 1 || String(n) !== search.trim()) return setErr(T.errors.bad)
+    const inList = ready.find((t) => t.token_number === n)
+    if (inList) {
+      if (!picked.has(inList.token_id)) toggle(inList)
+      setSearch('')
+      return
+    }
     setBusy('add')
     try {
       const r = await fetchBillToken(acc.token, n, date)
       if (!r?.ok) return setErr(errText(r))
-      if (lines.some((l) => l.token_id === r.token_id)) return setErr(T.errors.already_added)
-      if (lines.length && farmerKey(lines[0].farmer_name, lines[0].farmer_phone_number) !== farmerKey(r.farmer_name, r.farmer_phone_number)) {
-        return setErr(`${T.errors.other_farmer} (${r.farmer_name}, ${r.farmer_phone_number || '-'})`)
-      }
-      setLines((ls) => [...ls, { ...r, rates: { utrai: '', mapai: '', hamali: '' } }])
-      setNo('')
-      inputRef.current?.focus()
+      if (picked.has(r.token_id)) return setErr(T.errors.already_added)
+      setLines((ls) => [...ls, newLine(r)])
+      setSearch('')
     } catch (ex) {
       fail(ex)
     } finally {
@@ -262,8 +338,10 @@ export default function FarmerBill({ lang, acc, onBack, onExpired }) {
     try {
       const r = await addToPending(acc.token, items())
       if (!r?.ok) return setErr(errText(r))
-      setOk(T.added.replace('{n}', r.count).replace('{f}', lines[0]?.farmer_name || ''))
+      setOk(T.added.replace('{n}', r.count))
       setLines([])
+      setBillKey(null)
+      setReadyReload((n) => n + 1)
     } catch (ex) {
       fail(ex)
     } finally {
@@ -282,10 +360,12 @@ export default function FarmerBill({ lang, acc, onBack, onExpired }) {
     setAskMode(false)
     setBusy('bill')
     try {
-      const r = await makeFarmerBill(acc.token, items(), mode)
+      const r = await makeFarmerBill(acc.token, items(), mode, chosen?.tokenId || null)
       if (!r?.ok) return setErr(errText(r))
       setDone(r)
       setLines([])
+      setBillKey(null)
+      setReadyReload((n) => n + 1)
     } catch (ex) {
       fail(ex)
     } finally {
@@ -324,7 +404,6 @@ export default function FarmerBill({ lang, acc, onBack, onExpired }) {
   }
 
   // ---------------------------------------------------------------- form
-  const first = lines[0]
   return (
     <div className="bp-card fb">
       <div className="bp-top">
@@ -337,45 +416,89 @@ export default function FarmerBill({ lang, acc, onBack, onExpired }) {
         </button>
       </div>
 
-      <div className={'fb-farmer' + (first ? ' set' : '')}>
-        <span>👨‍🌾</span>
-        {first ? (
-          <b>
-            {T.farmer}: {first.farmer_name} · {first.farmer_phone_number || '-'}
-          </b>
-        ) : (
-          <span>{T.farmerFirst}</span>
-        )}
-      </div>
-
-      <form className="fb-add" onSubmit={add}>
+      {/* date + search */}
+      <form className="fb-add" onSubmit={addByNumber}>
         <label>
           <span>{T.date}</span>
           <input type="date" className="bp-input" value={date} max={ymd(new Date())} onChange={(e) => e.target.value && setDate(e.target.value)} />
         </label>
         <label className="fb-add-no">
-          <span>{T.addToken}</span>
+          <span>{T.search}</span>
           <div>
-            <input
-              ref={inputRef}
-              className="bp-input"
-              value={no}
-              onChange={(e) => setNo(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              inputMode="numeric"
-              placeholder={T.tokenNo}
-            />
+            <input className="bp-input" value={search} onChange={(e) => setSearch(e.target.value.slice(0, 40))} placeholder="#" />
             <button type="submit" className="bp-btn" disabled={busy === 'add'}>
-              {busy === 'add' ? '…' : `+ ${T.add}`}
+              {busy === 'add' ? '…' : `+ ${T.addNo}`}
             </button>
           </div>
         </label>
       </form>
 
+      {/* ready list */}
+      <div className="bx-section">
+        {T.ready} <b>{ready.length}</b>
+      </div>
+      {readyLoading ? (
+        <div className="bp-empty">{T.wait}</div>
+      ) : ready.length === 0 ? (
+        <div className="bx-empty-sm">{T.readyNone}</div>
+      ) : readyShown.length === 0 ? (
+        <div className="bx-empty-sm">{T.readyNoneFound}</div>
+      ) : (
+        <div className="bx-ready">
+          {readyShown.map((t) => {
+            const on = picked.has(t.token_id)
+            const other = !on && chosen && lineKey(t) !== chosen.key
+            return (
+              <label key={t.token_id} className={'bx-ready-row' + (on ? ' on' : '') + (other ? ' other' : '')}>
+                <input type="checkbox" checked={on} onChange={() => toggle(t)} />
+                <span className="bx-no">#{t.token_number}</span>
+                <span className="bx-who">
+                  <b>{t.farmer_name}</b>
+                  <small>
+                    {t.farmer_phone_number || '-'} · {t.commodity_name} · {qtl(t.total_weight_quintal)} {T.qtl} × {inr(t.rate_per_quintal)}
+                  </small>
+                  {other && <em>⚠ {T.otherFarmer}</em>}
+                </span>
+                <span className="bx-amt">{inr(lineGross(t))}</span>
+              </label>
+            )
+          })}
+        </div>
+      )}
+
       {err && <div className="bp-error">{err}</div>}
       {ok && <div className="fb-ok">{ok}</div>}
 
+      {/* bill in the name of */}
+      {farmers.length > 1 && (
+        <div className="bx-namebox">
+          <div className="bx-namebox-title">👨‍🌾 {T.billFor}</div>
+          <div className="bx-namebox-note">{T.billForNote}</div>
+          {farmers.map((f) => (
+            <label key={f.key} className={'bx-name' + (chosen?.key === f.key ? ' on' : '')}>
+              <input type="radio" name="billfor" checked={chosen?.key === f.key} onChange={() => setBillKey(f.key)} />
+              <span>
+                <b>{f.name}</b>
+                <small>{f.phone || '-'}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+      {farmers.length === 1 && (
+        <div className="fb-farmer set">
+          <span>👨‍🌾</span>
+          <b>
+            {T.farmer}: {chosen.name} · {chosen.phone || '-'}
+          </b>
+        </div>
+      )}
+
+      <div className="bx-section">
+        {T.selected} <b>{lines.length}</b>
+      </div>
       {lines.length === 0 ? (
-        <div className="bp-empty">{T.none}</div>
+        <div className="bx-empty-sm">{T.none}</div>
       ) : (
         <div className="fb-lines">
           {lines.map((l) => {
@@ -389,7 +512,7 @@ export default function FarmerBill({ lang, acc, onBack, onExpired }) {
                       #{l.token_number} — {l.commodity_name}
                     </b>
                     <div className="bp-muted bp-small">
-                      {prettyDate(l.token_date, lang)} · {l.buyer_name} · {qtl(l.total_weight_quintal)} {T.qtl} × {inr(l.rate_per_quintal)}
+                      {l.farmer_name} · {prettyDate(l.token_date, lang)} · {l.buyer_name} · {qtl(l.total_weight_quintal)} {T.qtl} × {inr(l.rate_per_quintal)}
                     </div>
                   </div>
                   <button type="button" className="fb-x" title={T.remove} onClick={() => setLines((ls) => ls.filter((x) => x.token_id !== l.token_id))}>
@@ -469,6 +592,11 @@ export default function FarmerBill({ lang, acc, onBack, onExpired }) {
             <p>
               {T.grandNet}: <b>{inr(gNet)}</b>
             </p>
+            {chosen && (
+              <p className="bp-muted">
+                {T.billFor}: <b>{chosen.name}</b>
+              </p>
+            )}
             <div className="fb-modes">
               <button type="button" className="cash" onClick={() => makeBill('CASH')}>
                 <span>💵</span>

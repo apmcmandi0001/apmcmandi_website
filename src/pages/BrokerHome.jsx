@@ -7,19 +7,26 @@ import PendingBills from './PendingBills'
 import BuyerBill from './BuyerBill'
 import TransferBill from './TransferBill'
 import ExportBills from './ExportBills'
+import BrokerProgress from './BrokerProgress'
+import BrokerBin from './BrokerBin'
 import { reprintFarmerBill, reprintBuyerBill, reprintTransfer } from '../trader/reprintFarmerBill'
 import './BrokerPortal.css'
 import './BrokerHome.css'
 
 // =============================================================================
 // Broker Dashboard on the website — same as the app's Broker Dashboard:
-//   date ‹ › · search token · 6 action tiles · sales (KPIs + 7-day graph +
-//   sale by commodity) · commodity summary → token list → token details
+//   date ‹ › · search token · 8 action tiles (Token progress, Farmer bill, …, Bin)
+//   · sales (KPIs + 7-day graph + sale by commodity) · commodity summary →
+//   token list → token details
 // =============================================================================
 
 const TEXT = {
   en: {
     title: 'Broker Dashboard',
+    progress: 'Token progress',
+    progressSub: 'Entry → Auction → Weight → Bill',
+    bin: 'Bin',
+    binSub: 'Not auctioned in the week',
     back: '← My Accounts',
     backHome: '← Dashboard',
     today: 'Today',
@@ -98,6 +105,10 @@ const TEXT = {
   },
   hi: {
     title: 'दलाल डैशबोर्ड',
+    progress: 'टोकन प्रगति',
+    progressSub: 'एंट्री → लिलाव → तोलाई → बिल',
+    bin: 'बिन',
+    binSub: 'हफ़्ते में लिलाव नहीं हुआ',
     back: '← मेरे खाते',
     backHome: '← डैशबोर्ड',
     today: 'आज',
@@ -176,6 +187,10 @@ const TEXT = {
   },
   mr: {
     title: 'अडत्या डॅशबोर्ड',
+    progress: 'टोकन प्रगती',
+    progressSub: 'एंट्री → लिलाव → तोलाई → बिल',
+    bin: 'बिन',
+    binSub: 'आठवड्यात लिलाव झाला नाही',
     back: '← माझी खाती',
     backHome: '← डॅशबोर्ड',
     today: 'आज',
@@ -353,7 +368,7 @@ export default function BrokerHome({ lang, acc, onBack, backLabel }) {
   const [loading, setLoading] = useState(true)
   const [msg, setMsg] = useState('')
   const [reload, setReload] = useState(0)
-  // home | bills | pending | commodity | token
+  // home | progress | bin | farmer | bills | pending | commodity | token | …
   const [view, setView] = useState({ name: 'home' })
 
   function expired() {
@@ -385,6 +400,24 @@ export default function BrokerHome({ lang, acc, onBack, backLabel }) {
   }
 
   // ---- sub screens
+  if (view.name === 'progress') {
+    return (
+      <BrokerProgress
+        lang={lang}
+        acc={acc}
+        initialDate={view.date}
+        onBack={home}
+        onExpired={expired}
+        onMakeBill={(d, tokenId) => setView({ name: 'farmer', date: d, tokenId })}
+        onOpenPending={() => setView({ name: 'pending' })}
+        onOpenBin={() => setView({ name: 'bin' })}
+        onOpenToken={(n, d) => setView({ name: 'token', number: n, date: d, from: { name: 'progress', date: d } })}
+      />
+    )
+  }
+  if (view.name === 'bin') {
+    return <BrokerBin lang={lang} acc={acc} onBack={home} onExpired={expired} />
+  }
   if (view.name === 'export') {
     return <ExportBills lang={lang} acc={acc} onBack={home} onExpired={expired} />
   }
@@ -414,7 +447,7 @@ export default function BrokerHome({ lang, acc, onBack, backLabel }) {
     )
   }
   if (view.name === 'farmer') {
-    return <FarmerBill lang={lang} acc={acc} onBack={home} onExpired={expired} />
+    return <FarmerBill lang={lang} acc={acc} onBack={home} onExpired={expired} initialDate={view.date} preselectTokenId={view.tokenId} />
   }
   if (view.name === 'token') {
     return <TokenDetail T={T} lang={lang} acc={acc} number={view.number} date={view.date} onBack={() => setView(view.from || { name: 'home' })} onExpired={expired} />
@@ -511,6 +544,8 @@ function Header({ T, lang, acc, me, date, setDate, onBack, backLabel, onFind }) 
 
 // ------------------------------------------------------------------ tiles
 const ICONS = {
+  progress: 'M3 12h4l3-8 4 16 3-8h4',
+  bin: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
   farmer: 'M4 20h16M6 20V10l6-5 6 5v10M10 20v-5h4v5',
   buyer: 'M3 9l1.5-5h15L21 9M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0zM5 13v8h14v-8',
   pending: 'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z',
@@ -523,11 +558,13 @@ function Tiles({ T, data, onOpen }) {
   const pend = data?.pending_count || 0
   const unb = data?.unbilled_buyers || 0
   const tiles = [
+    { k: 'progress', title: T.progress, sub: T.progressSub, go: 'progress' },
     { k: 'farmer', title: T.farmerBill, sub: T.farmerBillSub, go: 'farmer' },
     { k: 'buyer', title: T.buyerBills, sub: unb > 0 ? T.buyersWaiting.replace('{n}', unb) : T.allBilled, badge: unb, go: 'buyer' },
     { k: 'pending', title: T.pending, sub: pend > 0 ? T.tokensWaiting.replace('{n}', pend) : T.allDone, badge: pend, go: 'pending' },
     { k: 'bills', title: T.bills, sub: T.billsSub, go: 'bills' },
     { k: 'transfer', title: T.transfer, sub: T.transferSub, go: 'transfer' },
+    { k: 'bin', title: T.bin, sub: T.binSub, go: 'bin' },
     { k: 'export', title: T.export, sub: T.exportSub, go: 'export' },
   ]
   return (

@@ -1,0 +1,467 @@
+/* Broker dashboard extras (Nov 2026): Token progress, Bin, Farmer bill list,
+   Pending bills → Customize. Uses the colours of BrokerPortal.css (--bp-*). */
+
+/* ---------- dashboard: 8 tiles → 4 per row on wide screens ---------- */
+@media (min-width: 900px) {
+  .bh-tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.bh-tile-progress .bh-tile-icon {
+  background: #ccfbf1;
+  color: #0f766e;
+}
+.bh-tile-bin .bh-tile-icon {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ---------- shared bits ---------- */
+.bx-no {
+  flex-shrink: 0;
+  min-width: 52px;
+  height: 44px;
+  padding: 0 8px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bp-soft, #ecfeff);
+  color: var(--bp-brand, #0e7490);
+  font-weight: 900;
+  font-size: 16px;
+}
+.bx-no.bin {
+  background: #fef3c7;
+  color: #b45309;
+}
+.bx-who {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.bx-who b {
+  font-size: 15.5px;
+  overflow-wrap: anywhere;
+}
+.bx-who small {
+  color: var(--bp-muted, #5b7078);
+  font-size: 13px;
+}
+.bx-who em {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  color: #b45309;
+}
+.bx-amt {
+  font-weight: 800;
+  white-space: nowrap;
+}
+.bx-section {
+  margin: 18px 0 8px;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--bp-text, #0f2a33);
+}
+.bx-section b {
+  margin-left: 6px;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--bp-soft, #ecfeff);
+  color: var(--bp-brand, #0e7490);
+  font-size: 13px;
+}
+.bx-empty-sm {
+  padding: 14px;
+  border: 1px dashed var(--bp-line, #dbe7ea);
+  border-radius: 12px;
+  color: var(--bp-muted, #5b7078);
+  text-align: center;
+  font-size: 14px;
+}
+.bx-note {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* stage colours */
+.bx-badge {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.st-auction.bx-badge { background: #f1f5f9; color: #475569; }
+.st-weight.bx-badge { background: #ccfbf1; color: #0f766e; }
+.st-bill.bx-badge { background: #e0e7ff; color: #4338ca; }
+.st-pending.bx-badge { background: #fef3c7; color: #b45309; }
+.st-done.bx-badge { background: #dcfce7; color: #15803d; }
+.st-bin.bx-badge { background: #fee2e2; color: #b91c1c; }
+
+/* ---------- token progress ---------- */
+.bx-date {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid var(--bp-line, #dbe7ea);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #fff;
+}
+.bx-date button {
+  width: 48px;
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  color: var(--bp-brand, #0e7490);
+  cursor: pointer;
+}
+.bx-date button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.bx-date label {
+  flex: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  font-weight: 800;
+}
+.bx-date input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+}
+.bx-binbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 11px 14px;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  background: #fffbeb;
+  color: #92400e;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.bx-binbar b {
+  white-space: nowrap;
+}
+.bx-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.bx-chip {
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1.5px solid var(--bp-line, #dbe7ea);
+  background: #fff;
+  color: var(--bp-muted, #5b7078);
+  cursor: pointer;
+}
+.bx-chip b {
+  margin-left: 4px;
+  color: var(--bp-text, #0f2a33);
+}
+.bx-chip.on {
+  border-color: var(--bp-brand, #0e7490);
+  background: var(--bp-soft, #ecfeff);
+  color: var(--bp-brand, #0e7490);
+}
+.bx-tok {
+  border: 1px solid var(--bp-line, #dbe7ea);
+  border-left: 4px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fff;
+}
+.bx-tok.st-weight { border-left-color: #14b8a6; }
+.bx-tok.st-bill { border-left-color: #6366f1; }
+.bx-tok.st-pending { border-left-color: #f59e0b; }
+.bx-tok.st-done { border-left-color: #22c55e; }
+.bx-tok-main {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.bx-steps {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0 8px;
+}
+.bx-step {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  position: relative;
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+.bx-step::before {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: #e2e8f0;
+  z-index: 0;
+}
+.bx-step:first-child::before {
+  display: none;
+}
+.bx-step.on::before {
+  background: var(--bp-brand, #0e7490);
+}
+.bx-step i {
+  position: relative;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 12px;
+  background: #fff;
+  border: 2px solid #cbd5e1;
+}
+.bx-step.on {
+  color: var(--bp-brand, #0e7490);
+}
+.bx-step.on i {
+  background: var(--bp-brand, #0e7490);
+  border-color: var(--bp-brand, #0e7490);
+  color: #fff;
+}
+.bx-step.next i {
+  border-color: #f59e0b;
+  color: #b45309;
+}
+.bx-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bx-facts span {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bp-text, #0f2a33);
+}
+.bx-act {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* ---------- bin ---------- */
+.bx-week {
+  margin-top: 16px;
+}
+.bx-week-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-left: 10px;
+  border-left: 4px solid #f59e0b;
+  font-weight: 800;
+}
+.bx-week-head b {
+  color: #b45309;
+}
+.bx-bin-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--bp-line, #dbe7ea);
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* ---------- farmer bill: ready list ---------- */
+.bx-ready {
+  display: grid;
+  gap: 8px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.bx-ready-row,
+.bx-ptok {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--bp-line, #dbe7ea);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+.bx-ready-row input,
+.bx-ptok input,
+.bx-pgroup-head input,
+.bx-name input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--bp-brand, #0e7490);
+  flex-shrink: 0;
+}
+.bx-ready-row.on,
+.bx-ptok.on {
+  border-color: var(--bp-brand, #0e7490);
+  background: var(--bp-soft, #ecfeff);
+}
+.bx-ready-row.other {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+/* whose name the bill is in */
+.bx-namebox {
+  margin: 14px 0 6px;
+  padding: 14px;
+  border: 1.5px solid #fcd34d;
+  border-radius: 14px;
+  background: #fffbeb;
+}
+.bx-namebox-title {
+  font-weight: 800;
+  font-size: 15px;
+}
+.bx-namebox-note {
+  margin: 2px 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b45309;
+}
+.bx-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  margin-top: 6px;
+  border: 1.5px solid #fde68a;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+.bx-name.on {
+  border-color: var(--bp-brand, #0e7490);
+  background: var(--bp-soft, #ecfeff);
+}
+.bx-name span {
+  display: grid;
+}
+.bx-name small {
+  color: var(--bp-muted, #5b7078);
+}
+
+/* ---------- pending bills: customize ---------- */
+.bx-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1.5px dashed var(--bp-brand-2, #0891b2);
+  border-radius: 14px;
+  background: #f8fcfd;
+}
+.bx-custom.on {
+  border-style: solid;
+  background: var(--bp-soft, #ecfeff);
+}
+.bx-custom > div {
+  display: grid;
+  gap: 2px;
+}
+.bx-custom small {
+  color: var(--bp-muted, #5b7078);
+  font-size: 13px;
+}
+.bx-custom .bp-btn {
+  white-space: nowrap;
+}
+.bx-pgroup {
+  border: 1px solid var(--bp-line, #dbe7ea);
+  border-radius: 14px;
+  padding: 10px;
+  background: #fff;
+  display: grid;
+  gap: 8px;
+}
+.bx-pgroup-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 4px 8px;
+  border-bottom: 1px dashed var(--bp-line, #dbe7ea);
+  cursor: pointer;
+}
+.bx-pgroup-head span {
+  display: grid;
+}
+.bx-pgroup-head small {
+  color: var(--bp-muted, #5b7078);
+  font-size: 13px;
+}
+.bx-bottombar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+.bx-bottombar .bp-btn {
+  box-shadow: 0 10px 24px rgba(8, 47, 73, 0.25);
+  padding: 14px 28px;
+}
+
+@media (max-width: 560px) {
+  .bx-custom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .bx-step span {
+    font-size: 10.5px;
+  }
+}

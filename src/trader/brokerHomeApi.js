@@ -32,13 +32,25 @@ export const fetchBillToken = (token, number, date) =>
 /** items = [{ token_id, charge_type: 'utrai'|'mapai'|'hamali', charge_rate }] */
 export const addToPending = (token, items) => call('broker_web_add_pending', { p_token: token, p_items: items })
 
-/** Makes the bill. mode = 'CASH' | 'RTGS'. Returns { ok, bill, broker, mandi, lines } */
-export const makeFarmerBill = (token, items, mode) =>
-  call('broker_web_make_farmer_bill', { p_token: token, p_items: items, p_payment_mode: mode })
+/** Makes the bill. mode = 'CASH' | 'RTGS'. billTokenId = the bill is in the name of this
+ *  token's farmer (tokens of different farmers can be in one bill); null = first token.
+ *  Returns { ok, bill, broker, mandi, lines } */
+export const makeFarmerBill = (token, items, mode, billTokenId = null) =>
+  call('broker_web_make_farmer_bill', { p_token: token, p_items: items, p_payment_mode: mode, p_bill_token: billTokenId })
+
+/** Tokens of a date that are ready for a farmer bill (weighed, no bill, not in Pending) */
+export const fetchReadyTokens = (token, date) => call('broker_web_ready_tokens', { p_token: token, p_date: date }).then((d) => d || [])
 
 /** Print data of a saved farmer bill */
 export const fetchFarmerBillPrint = (token, billId) =>
   call('broker_web_farmer_bill_print', { p_token: token, p_bill: billId })
+
+// ----------------------------------------------------------------- progress + bin
+/** My tokens of a date with their stage: { tokens: [...], bin_count } */
+export const fetchBrokerProgress = (token, date) => call('broker_web_progress', { p_token: token, p_date: date })
+
+/** My tokens that were not auctioned in their week (status 'expired') */
+export const fetchBrokerBin = (token) => call('broker_web_bin', { p_token: token }).then((d) => d || [])
 
 // ----------------------------------------------------------------- pending bills
 /** All tokens in Pending Bills, with saved deduction (if any), rate and weight */

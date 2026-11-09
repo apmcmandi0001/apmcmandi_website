@@ -3,11 +3,15 @@ import { inr, prettyDate } from '../data'
 import { fetchPendingFarmers, removePending, makeFarmerBill } from '../trader/brokerHomeApi'
 import { printFarmerBill } from '../trader/farmerBillPrint'
 import './FarmerBill.css'
+import './BrokerExtra.css'
 
 // =============================================================================
 // Pending bills (website) — same as the app:
-//   1. list of farmers with tokens waiting (date filter + name search)
-//   2. one farmer: tick tokens, deduction (saved one is used, else enter it),
+//   1. list of farmers with tokens waiting (date filter + name search).
+//      Tokens of the same farmer (same name + same phone) are put together.
+//   2. Customize: tick any tokens — split a farmer's tokens, or put tokens of
+//      different farmers into one bill (then choose whose name it is in)
+//   3. bill screen: tick tokens, deduction (saved one is used, else enter it),
 //      remove a token from Pending, Generate Bill (CASH / RTGS) → print
 // =============================================================================
 
@@ -15,6 +19,15 @@ const TEXT = {
   en: {
     title: 'Pending bills',
     back: '← Dashboard',
+    customize: 'Customize',
+    customizeSub: 'Split a farmer’s tokens, or put tokens of different farmers into one bill',
+    customizeOn: 'Tick the tokens for one bill',
+    customizeDone: 'Done',
+    makeOne: '{n} tokens → one bill',
+    pickAll: 'All of this farmer',
+    customTitle: 'Custom bill',
+    billFor: 'Bill in the name of',
+    billForNote: 'This bill has tokens of different farmers',
     backList: '← Pending bills',
     allDates: 'All dates',
     search: 'Search farmer name',
@@ -56,7 +69,7 @@ const TEXT = {
       already_billed: 'Bill already made for this token',
       no_auction: 'Auction pending for this token',
       no_weight: 'Weighing pending for this token',
-      other_farmer: 'This token is for a different farmer',
+      bad_name: 'Choose whose name the bill is in',
       no_charge: 'Enter Utrai, Mapai or Hamali for every ticked token',
       server: 'Server error. Please try again',
     },
@@ -64,6 +77,15 @@ const TEXT = {
   hi: {
     title: 'पेंडिंग बिल',
     back: '← डैशबोर्ड',
+    customize: 'कस्टमाइज़',
+    customizeSub: 'किसान के टोकन अलग करें, या अलग-अलग किसानों के टोकन एक बिल में डालें',
+    customizeOn: 'एक बिल के टोकन पर टिक करें',
+    customizeDone: 'बंद करें',
+    makeOne: '{n} टोकन → एक बिल',
+    pickAll: 'इस किसान के सभी',
+    customTitle: 'कस्टम बिल',
+    billFor: 'बिल किसके नाम पर?',
+    billForNote: 'इस बिल में अलग-अलग किसानों के टोकन हैं',
     backList: '← पेंडिंग बिल',
     allDates: 'सभी दिनांक',
     search: 'किसान का नाम खोजें',
@@ -105,7 +127,7 @@ const TEXT = {
       already_billed: 'इस टोकन का बिल बन चुका है',
       no_auction: 'लिलाव अभी बाकी है',
       no_weight: 'तोलाई अभी बाकी है',
-      other_farmer: 'यह टोकन दूसरे किसान का है',
+      bad_name: 'बिल किसके नाम पर है, चुनें',
       no_charge: 'चुने गए हर टोकन के लिए उतराई / मापाई / हमाली में से एक डालें',
       server: 'सर्वर त्रुटि। फिर से कोशिश करें',
     },
@@ -113,6 +135,15 @@ const TEXT = {
   mr: {
     title: 'पेंडिंग बिल',
     back: '← डॅशबोर्ड',
+    customize: 'कस्टमाइझ',
+    customizeSub: 'शेतकऱ्याचे टोकन वेगळे करा, किंवा वेगवेगळ्या शेतकऱ्यांचे टोकन एका बिलात टाका',
+    customizeOn: 'एका बिलाच्या टोकनवर टिक करा',
+    customizeDone: 'बंद करा',
+    makeOne: '{n} टोकन → एक बिल',
+    pickAll: 'या शेतकऱ्याचे सर्व',
+    customTitle: 'कस्टम बिल',
+    billFor: 'बिल कोणाच्या नावावर?',
+    billForNote: 'या बिलात वेगवेगळ्या शेतकऱ्यांचे टोकन आहेत',
     backList: '← पेंडिंग बिल',
     allDates: 'सर्व तारखा',
     search: 'शेतकऱ्याचे नाव शोधा',
@@ -154,7 +185,7 @@ const TEXT = {
       already_billed: 'या टोकनचे बिल आधीच झाले आहे',
       no_auction: 'लिलाव अजून बाकी आहे',
       no_weight: 'तोलाई अजून बाकी आहे',
-      other_farmer: 'हा टोकन दुसऱ्या शेतकऱ्याचा आहे',
+      bad_name: 'बिल कोणाच्या नावावर आहे ते निवडा',
       no_charge: 'निवडलेल्या प्रत्येक टोकनसाठी उतराई / मापाई / हमाली पैकी एक टाका',
       server: 'सर्व्हर त्रुटी. पुन्हा प्रयत्न करा',
     },
@@ -186,7 +217,9 @@ export default function PendingBills({ lang, acc, onBack, onExpired }) {
   const [reload, setReload] = useState(0)
   const [date, setDate] = useState('')
   const [search, setSearch] = useState('')
-  const [open, setOpen] = useState(null) // farmer key
+  const [open, setOpen] = useState(null) // { ids: [pending ids], custom: bool }
+  const [customize, setCustomize] = useState(false)
+  const [picked, setPicked] = useState(() => new Set()) // pending ids ticked in Customize
 
   useEffect(() => {
     let alive = true
@@ -222,15 +255,18 @@ export default function PendingBills({ lang, acc, onBack, onExpired }) {
   }, [rows, search, date])
 
   if (open) {
-    const items = rows.filter((r) => farmerKey(r.farmer_name, r.farmer_phone_number) === open)
+    const items = rows.filter((r) => open.ids.includes(r.pending_id))
     return (
       <FarmerPending
         T={T}
         lang={lang}
         acc={acc}
         items={items}
+        custom={open.custom}
         onBack={() => {
           setOpen(null)
+          setCustomize(false)
+          setPicked(new Set())
           setReload((n) => n + 1)
         }}
         onChanged={() => setReload((n) => n + 1)}
@@ -238,6 +274,13 @@ export default function PendingBills({ lang, acc, onBack, onExpired }) {
       />
     )
   }
+
+  const togglePick = (ids, on) =>
+    setPicked((p) => {
+      const n = new Set(p)
+      ids.forEach((id) => (on ? n.add(id) : n.delete(id)))
+      return n
+    })
 
   return (
     <div className="bp-card">
@@ -265,17 +308,76 @@ export default function PendingBills({ lang, acc, onBack, onExpired }) {
         <input className="bp-input" placeholder={T.search} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
+      {rows.length > 0 && (
+        <div className={'bx-custom' + (customize ? ' on' : '')}>
+          <div>
+            <b>✂ {T.customize}</b>
+            <small>{customize ? T.customizeOn : T.customizeSub}</small>
+          </div>
+          <button
+            type="button"
+            className={'bp-btn' + (customize ? ' bp-btn-outline' : '')}
+            onClick={() => {
+              setCustomize((c) => !c)
+              setPicked(new Set())
+            }}
+          >
+            {customize ? T.customizeDone : T.customize}
+          </button>
+        </div>
+      )}
+
       {msg && <div className="bp-error">{msg}</div>}
       {loading ? (
         <div className="bp-empty">{T.wait}</div>
       ) : groups.length === 0 ? (
         <div className="bp-empty">{rows.length === 0 ? T.none : T.noneFound}</div>
+      ) : customize ? (
+        <div className="bp-list">
+          {groups.map((g) => {
+            const ids = g.items.map((l) => l.pending_id)
+            const all = ids.every((id) => picked.has(id))
+            return (
+              <div key={g.key} className="bx-pgroup">
+                <label className="bx-pgroup-head">
+                  <input type="checkbox" checked={all} onChange={() => togglePick(ids, !all)} />
+                  <span>
+                    <b>👨‍🌾 {g.name}</b>
+                    <small>
+                      {g.phone} · {T.pickAll}
+                    </small>
+                  </span>
+                </label>
+                {g.items.map((l) => (
+                  <label key={l.pending_id} className={'bx-ptok' + (picked.has(l.pending_id) ? ' on' : '')}>
+                    <input type="checkbox" checked={picked.has(l.pending_id)} onChange={(e) => togglePick([l.pending_id], e.target.checked)} />
+                    <span className="bx-no">#{l.token_number}</span>
+                    <span className="bx-who">
+                      <b>{l.commodity_name}</b>
+                      <small>
+                        {prettyDate(l.token_date, lang)} · {qtl(l.total_weight_quintal)} {T.qtl} × {inr(l.rate_per_quintal)}
+                      </small>
+                    </span>
+                    <span className="bx-amt">{inr(lineGross(l) - lineCharge(l).amount)}</span>
+                  </label>
+                ))}
+              </div>
+            )
+          })}
+          {picked.size > 0 && (
+            <div className="bx-bottombar">
+              <button type="button" className="bp-btn" onClick={() => setOpen({ ids: [...picked], custom: true })}>
+                🧾 {T.makeOne.replace('{n}', picked.size)}
+              </button>
+            </div>
+          )}
+        </div>
       ) : (
         <div className="bp-list">
           {groups.map((g) => {
             const net = g.items.reduce((s, l) => s + lineGross(l) - lineCharge(l).amount, 0)
             return (
-              <button key={g.key} type="button" className="bp-row pb-farmer" onClick={() => setOpen(g.key)}>
+              <button key={g.key} type="button" className="bp-row pb-farmer" onClick={() => setOpen({ ids: g.items.map((l) => l.pending_id), custom: false })}>
                 <span className="pb-ico">👨‍🌾</span>
                 <div className="bp-row-main">
                   <div className="bp-row-who">{g.name}</div>
@@ -295,15 +397,24 @@ export default function PendingBills({ lang, acc, onBack, onExpired }) {
 }
 
 // ------------------------------------------------------------------ one farmer
-function FarmerPending({ T, lang, acc, items, onBack, onChanged, onExpired }) {
+function FarmerPending({ T, lang, acc, items, custom, onBack, onChanged, onExpired }) {
   const [lines, setLines] = useState(() => items.map((r) => ({ ...r, selected: true, rates: { utrai: '', mapai: '', hamali: '' } })))
   const [busy, setBusy] = useState('')
   const [err, setErr] = useState('')
   const [askMode, setAskMode] = useState(false)
   const [done, setDone] = useState(null)
+  const [billKey, setBillKey] = useState(null) // farmer the bill is in the name of
 
   const first = items[0] || {}
   const chosen = lines.filter((l) => l.selected)
+
+  // farmers among the ticked tokens → whose name the bill is in
+  const farmers = []
+  for (const l of chosen) {
+    const k = farmerKey(l.farmer_name, l.farmer_phone_number)
+    if (!farmers.some((f) => f.key === k)) farmers.push({ key: k, name: l.farmer_name, phone: l.farmer_phone_number, tokenId: l.token_id })
+  }
+  const billFor = farmers.find((f) => f.key === billKey) || farmers[0] || null
   const gGross = chosen.reduce((s, l) => s + lineGross(l), 0)
   const gDed = chosen.reduce((s, l) => s + lineCharge(l).amount, 0)
 
@@ -350,7 +461,7 @@ function FarmerPending({ T, lang, acc, items, onBack, onChanged, onExpired }) {
         const c = lineCharge(l)
         return { token_id: l.token_id, charge_type: c.type, charge_rate: c.rate }
       })
-      const r = await makeFarmerBill(acc.token, payload, mode)
+      const r = await makeFarmerBill(acc.token, payload, mode, billFor?.tokenId || null)
       if (!r?.ok) {
         const base = T.errors[r?.error] || T.errors.server
         return setErr(r?.token_number ? `${T.tokenWord} #${r.token_number}: ${base}` : base)
@@ -391,8 +502,8 @@ function FarmerPending({ T, lang, acc, items, onBack, onChanged, onExpired }) {
       <div className="bp-top">
         <div>
           <div className="bp-muted">{T.title}</div>
-          <h1 className="bp-name">{first.farmer_name}</h1>
-          <div className="bp-muted bp-small">{first.farmer_phone_number}</div>
+          <h1 className="bp-name">{custom ? T.customTitle : first.farmer_name}</h1>
+          {!custom && <div className="bp-muted bp-small">{first.farmer_phone_number}</div>}
         </div>
         <button type="button" className="bp-btn bp-btn-outline" onClick={onBack}>
           {T.backList}
@@ -401,6 +512,22 @@ function FarmerPending({ T, lang, acc, items, onBack, onChanged, onExpired }) {
 
       <div className="bp-muted bp-small pb-hint">{T.select}</div>
       {err && <div className="bp-error">{err}</div>}
+
+      {farmers.length > 1 && (
+        <div className="bx-namebox">
+          <div className="bx-namebox-title">👨‍🌾 {T.billFor}</div>
+          <div className="bx-namebox-note">{T.billForNote}</div>
+          {farmers.map((f) => (
+            <label key={f.key} className={'bx-name' + (billFor?.key === f.key ? ' on' : '')}>
+              <input type="radio" name="pbillfor" checked={billFor?.key === f.key} onChange={() => setBillKey(f.key)} />
+              <span>
+                <b>{f.name}</b>
+                <small>{f.phone || '-'}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
 
       <div className="fb-lines">
         {lines.map((l) => {
@@ -416,6 +543,7 @@ function FarmerPending({ T, lang, acc, items, onBack, onChanged, onExpired }) {
                       #{l.token_number} — {l.commodity_name}
                     </b>
                     <div className="bp-muted bp-small">
+                      {custom ? `${l.farmer_name} · ` : ''}
                       {prettyDate(l.token_date, lang)} · {l.buyer_name} · {qtl(l.total_weight_quintal)} {T.qtl} × {inr(l.rate_per_quintal)}
                     </div>
                   </div>
@@ -496,6 +624,11 @@ function FarmerPending({ T, lang, acc, items, onBack, onChanged, onExpired }) {
             <p>
               {T.grandNet}: <b>{inr(gGross - gDed)}</b>
             </p>
+            {billFor && (
+              <p className="bp-muted">
+                {T.billFor}: <b>{billFor.name}</b>
+              </p>
+            )}
             <div className="fb-modes">
               <button type="button" className="cash" onClick={() => makeBill('CASH')}>
                 <span>💵</span>
